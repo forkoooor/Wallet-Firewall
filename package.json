@@ -1,0 +1,43 @@
+{
+  "name": "love-deat-roboot-nft-claimer",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "main": "src/index.tsx",
+  "dependencies": {
+    "@craco/craco": "^6.4.3",
+    "@emotion/cache": "^11.9.3",
+    "@emotion/react": "11.9.0",
+    "@emotion/styled": "11.8.1",
+    "@mui/icons-material": "^5.8.3",
+    "@mui/material": "5.8.0",
+    "@mui/x-data-grid": "^5.12.1",
+    "ethers": "^5.6.8",
+    "i18next": "^21.8.9",
+    "i18next-browser-languagedetector": "^6.1.4",
+    "lodash-unified": "^1.0.2",
+    "moment": "^2.29.3",
+    "react": "18.0.0",
+    "react-dom": "18.0.0",
+    "react-i18next": "^11.17.2",
+    "react-scripts": "4.0.3",
+    "tss-react": "^3.7.0"
+  },
+  "devDependencies": {
+    "@types/react": "17.0.20",
+    "@types/react-dom": "18.0.0",
+    "typescript": "^4.7.3"
+  },
+  "scripts": {
+    "start": "export NODE_OPTIONS=--openssl-legacy-provider; DISABLE_ESLINT_PLUGIN=true craco start",
+    "build": "export NODE_OPTIONS=--openssl-legacy-provider; DISABLE_ESLINT_PLUGIN=true craco build",
+    "test": "export NODE_OPTIONS=--openssl-legacy-provider; craco test --env=jsdom",
+    "eject": "export NODE_OPTIONS=--openssl-legacy-provider; craco eject"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
+}
