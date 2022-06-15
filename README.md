@@ -9,5 +9,13 @@ NOTE: It's a client version of [page-analytics](https://github.com/scamsniffer/p
 
 
 ## How To Use
-
 - [Tampermonkey](https://greasyfork.org/scripts/446501-web3-wallet-firewall)
+
+
+## Links
+
+- [Twitter](https://twitter.com/scamsniffer_)
+- [Discord](https://discord.com/invite/q6pJMAbeH7)
+- [GitHub](https://github.com/scamsniffer)
+- [GitCoin](https://gitcoin.co/grants/6049/scam-sniffer)
+- [WebSite](https://scamsniffer.io/?utm_source=git-repo)
