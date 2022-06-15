@@ -62,6 +62,7 @@ export default class Inspector {
       const parsedAction = parseRequest(args[0]);
       // call rule manager
       const state = context.ruleManager.process(parsedAction);
+      console.log("WalletFirewall", "request", parsedAction, state);
       if (state === 'ask') {
         // notify ui and wait result
         if (context.approver && parsedAction) {
@@ -74,8 +75,8 @@ export default class Inspector {
         }
       } else {
         return async () => {
-          const isApprove = state === 'pass';
-          return isApprove;
+          const rejected = state === 'pass' ? false : true;
+          return rejected;
         };
       }
     });

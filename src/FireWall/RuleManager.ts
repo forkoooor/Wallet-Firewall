@@ -32,6 +32,7 @@ export default class RuleManager {
 
   process(action: any) {
     let state = "pass";
+    if (!action) return state;
     const { passRules, blockRules, askRules } = this.rulesByType;
     const matchPass = this.checkRules(passRules, action);
     if (!matchPass) {

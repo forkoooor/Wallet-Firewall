@@ -57,14 +57,16 @@ export default class Handler {
     const pageActions = {
       push(log: any) {
         log.timestamp = Date.now();
+        // console.log(log);
         // consumer.process(log);
         try {
           const parsed = context.parseLog(log);
           if (parsed) {
             consumer.process(parsed);
-          } else {
-            consumer.process(log);
           }
+          // else {
+          //   consumer.process(log);
+          // }
         } catch (e) {
           console.error("error", e);
         }
