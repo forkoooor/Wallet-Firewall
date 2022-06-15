@@ -9,7 +9,8 @@ NOTE: It's a client version of [page-analytics](https://github.com/scamsniffer/p
 
 
 ## How To Use
-- [Tampermonkey](https://greasyfork.org/scripts/446501-web3-wallet-firewall)
+
+- [Tampermonkey](https://greasyfork.org/zh-CN/scripts/446527-web3-wallet-firewall)
 
 
 ## Links
