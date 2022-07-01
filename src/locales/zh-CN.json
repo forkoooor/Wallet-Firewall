@@ -12,6 +12,7 @@
     "type": "类型",
     "name": "名称",
     "detail": "规则详情",
+    "report": "举报",
     "rule_type_pass": "通过",
     "rule_type_block": "拦截",
     "rule_type_ask": "询问",

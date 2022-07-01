@@ -24,6 +24,7 @@ import {
   createShadowRootForwardedComponent,
 } from "./ShadowRoot/Portal";
 import { formatAction } from "./FireWall/Tx";
+import { reportScam } from "@scamsniffer/detector";
 
 export const ShadowRootDialog: typeof Dialog = createShadowRootForwardedComponent(Dialog) as any;
 
@@ -76,6 +77,19 @@ export default function AlertDialog() {
 
   const handleAppClose = () => {
     setAppOpen(false)
+  }
+
+  const handReport = () => {
+    reportScam({
+      slug: "unknown",
+      name: "unknown",
+      externalUrl: null,
+      twitterUsername: null,
+      matchType: "firewall_report",
+      post: {
+        links: [window.location.href]
+      },
+    });
   }
 
   return (
@@ -150,8 +164,7 @@ export default function AlertDialog() {
                 <h2>{action.short}</h2>
                 {action.args &&
                   action.args.map((_: any) => {
-
-                    let el = null
+                    let el = null;
                     if (_.display === "address") {
                       el = (
                         <div>
@@ -180,18 +193,25 @@ export default function AlertDialog() {
                         </div>
                       );
                     }
-                    return el && <div style={{marginTop: "10px"}}>{el}</div>;
+                    return el && <div style={{ marginTop: "10px" }}>{el}</div>;
                   })}
-                {
-                  action.description && <p style={{ fontSize: "14px", marginTop: "30px" }}>
+                {action.description && (
+                  <p style={{ fontSize: "14px", marginTop: "30px" }}>
                     {action.description}
                   </p>
-                }
+                )}
               </div>
             ) : null}
           </div>
         </DialogContent>
         <DialogActions style={{ paddingBottom: "15px" }}>
+          <Button
+            onClick={handReport}
+            autoFocus
+            style={{ color: "white", marginRight: "10px" }}
+          >
+            {t("report")}
+          </Button>
           <Button
             onClick={handApprove}
             autoFocus

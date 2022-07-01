@@ -6,6 +6,7 @@
         "type": "ask",
         "kind": "action",
         "values": [
+            "approve",
             "setApprovalForAll",
             "safeTransferFrom",
             "transferFrom"

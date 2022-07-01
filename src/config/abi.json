@@ -18,6 +18,30 @@
         "function safeTransferFrom(address from, address to, uint256 tokenId, uint256 _value, bytes calldata _data) external"
     ],
     "ActionFormatter": {
+        "approve": {
+            "en-US": {
+                "short": "Approve authority",
+                "args": [
+                    {
+                        "field": "to",
+                        "name": "Operator",
+                        "display": "address"
+                    }
+                ],
+                "description": "Once you approve this transaction,\nOperator can transfer NFTs from your wallet,\nMake sure to verify the operator address"
+            },
+            "zh-CN": {
+                "args": [
+                    {
+                        "field": "to",
+                        "name": "授权方",
+                        "display": "address"
+                    }
+                ],
+                "short": "NFT资产授权",
+                "description": "一旦你签名了此次请求,\n授权方便可以转移走你的NFT,\n请仔细检查授权方地址"
+            }
+        },
         "setApprovalForAll": {
             "en-US": {
                 "short": "Approve authority",
