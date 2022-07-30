@@ -21,7 +21,7 @@ export default class Handler {
         return result;
       }
     } catch (e) {
-      console.error(`executeHandler ${name} error`, e);
+      // console.error(`executeHandler ${name} error`, e);
     }
     return null;
   }

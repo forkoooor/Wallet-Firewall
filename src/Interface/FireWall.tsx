@@ -2,7 +2,6 @@ import Inspector from "../FireWall/Inspector";
 import Traffic from "./Traffic";
 import Rule from "./Rule";
 
-
 import * as React from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";

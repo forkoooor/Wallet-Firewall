@@ -42,9 +42,7 @@ export function parseRequest(request: any) {
   let isRead = false;
   if (
     [
-      "eth_call",
       "eth_sendTransaction",
-      // "eth_estimateGas",
       "eth_sendRawTransaction",
     ].indexOf(method) > -1
   ) {
@@ -74,19 +72,33 @@ export function parseRequest(request: any) {
             isRead,
             signature: decodedInput.signature,
             args: decodedInput.args,
+            to: transaction.to,
+            from: transaction.from,
+            data: transaction.data,
+            raw: transaction,
           };
         }
       } else if (dataEmpty && transaction.value) {
         parsedAction = {
           name: "transferETH",
           isRead,
-          args: { 
-            amount: transaction.value.toString()
+          to: transaction.to,
+          from: transaction.from,
+          data: transaction.data,
+          args: {
+            amount: transaction.value.toString(),
           },
+          raw: transaction,
         };
       }
     } catch (e) {
-      // console.log("parse request failed", e);
+      parsedAction = {
+        isRead,
+        to: tx.to,
+        from: tx.from,
+        data: tx.data,
+        raw: tx,
+      };
     }
   }
   

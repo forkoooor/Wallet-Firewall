@@ -9,11 +9,13 @@ specifiers:
   '@mui/material': 5.8.0
   '@mui/x-data-grid': ^5.12.1
   '@scamsniffer/detector': 0.0.8
+  '@types/isomorphic-fetch': ^0.0.36
   '@types/react': 17.0.20
   '@types/react-dom': 18.0.0
   ethers: ^5.6.8
   i18next: ^21.8.9
   i18next-browser-languagedetector: ^6.1.4
+  isomorphic-fetch: ^3.0.0
   lodash-unified: ^1.0.2
   moment: ^2.29.3
   react: 18.0.0
@@ -32,9 +34,11 @@ dependencies:
   '@mui/material': 5.8.0_meafyvi377g3gvveqhk35ofhqa
   '@mui/x-data-grid': 5.12.1_edfjojp7odepx4g5f5pv7vediu
   '@scamsniffer/detector': 0.0.8_typescript@4.7.3
+  '@types/isomorphic-fetch': 0.0.36
   ethers: 5.6.8
   i18next: 21.8.9
   i18next-browser-languagedetector: 6.1.4
+  isomorphic-fetch: 3.0.0
   lodash-unified: 1.0.2
   moment: 2.29.3
   react: 18.0.0

@@ -63,52 +63,66 @@ function mount(
     options: RenderInShadowRootOptions,
     { preventEventPropagationList, wrapJSX }: CreateRenderInShadowRootHostConfig,
 ): ReactRootShadowed {
-    const tag = options.tag || 'main'
-    const key = options.key || 'main'
-    if (shadow.querySelector<HTMLElement>(`${tag}.${key}`)) {
-        console.error('Tried to create root in', shadow, 'with key', key, ' which is already used. Skip rendering.')
-        return {
-            destroy: () => {
-            },
-            render: () => {},
-        }
-    }
-
-    jsx = getJSX(jsx)
-
-    const container = shadow.appendChild(document.createElement(tag))
-    container.className = key
-
-    const controller = new AbortController()
-    const signal = controller.signal
-
-    // prevent event popup
-    {
-        const stop = (e: Event): void => e.stopPropagation()
-        for (const each of preventEventPropagationList) {
-            container.addEventListener(each, stop, { signal })
-        }
-    }
-
-    const root = createRoot(container)
-    root.render(jsx)
-
-    signal.addEventListener('abort', () => [root.unmount(), container.remove()], { signal })
-    options.signal?.addEventListener('abort', () => controller.abort(), { signal })
-
+  const tag = options.tag || "main";
+  const key = options.key || "main";
+  if (shadow.querySelector<HTMLElement>(`${tag}.${key}`)) {
+    console.error(
+      "Tried to create root in",
+      shadow,
+      "with key",
+      key,
+      " which is already used. Skip rendering."
+    );
     return {
-        destroy: () => controller.abort(),
-        render: (jsx) => {
-            root!.render(getJSX(jsx))
-        },
+      destroy: () => {},
+      render: () => {},
+    };
+  }
+
+  jsx = getJSX(jsx);
+
+  const container = shadow.appendChild(document.createElement(tag));
+  container.className = key;
+
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  // prevent event popup
+  {
+    const stop = (e: Event): void => e.stopPropagation();
+    for (const each of preventEventPropagationList) {
+      container.addEventListener(each, stop, { signal });
     }
-    function getJSX(jsx: React.ReactChild) {
-        return (
-            <StrictMode>
-                <PreventEventPropagationListContext.Provider value={preventEventPropagationList}>
-                    <ShadowRootStyleProvider shadow={shadow}>{wrapJSX ? wrapJSX(jsx) : jsx}</ShadowRootStyleProvider>
-                </PreventEventPropagationListContext.Provider>
-            </StrictMode>
-        )
-    }
+  }
+
+  const root = createRoot(container);
+  /* @ts-ignore */
+  root.render(jsx);
+
+  signal.addEventListener("abort", () => [root.unmount(), container.remove()], {
+    signal,
+  });
+  options.signal?.addEventListener("abort", () => controller.abort(), {
+    signal,
+  });
+
+  return {
+    destroy: () => controller.abort(),
+    render: (jsx) => {
+      root!.render(getJSX(jsx));
+    },
+  };
+  function getJSX(jsx: React.ReactChild) {
+    return (
+      <StrictMode>
+        <PreventEventPropagationListContext.Provider
+          value={preventEventPropagationList}
+        >
+          <ShadowRootStyleProvider shadow={shadow}>
+            {wrapJSX ? wrapJSX(jsx) : jsx}
+          </ShadowRootStyleProvider>
+        </PreventEventPropagationListContext.Provider>
+      </StrictMode>
+    );
+  }
 }

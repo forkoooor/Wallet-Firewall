@@ -16,7 +16,9 @@ export default class RuleManager {
   checkByCondition(matchItem: any, action: any) {
     const { values, kind } = matchItem;
     let isMatch = false;
-    if (kind === "siteDomain") {
+    if (kind === 'all') {
+      isMatch = true;
+    } else if (kind === "siteDomain") {
       isMatch = values.includes(this.matchArgs.siteDomain);
     } else if (kind === "action" && action) {
       isMatch = values.includes(action.name);
