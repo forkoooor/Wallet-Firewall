@@ -3,8 +3,10 @@ import * as contract from "./SecurityCheck/contract";
 import * as domain from "./SecurityCheck/domain";
 import * as malicious from "./SecurityCheck/malicious-code";
 import * as simulation from "./SecurityCheck/simulation";
+import * as allowlist from "./SecurityCheck/allowlist";
+import * as sign from "./SecurityCheck/sign";
 
-const checkList = [domain, contract, simulation, address, malicious];
+const checkList = [domain, sign, contract, allowlist, simulation, address, malicious];
 
 export async function checkTransaction(tx: any, env: any) {
   const start = Date.now();
@@ -14,7 +16,6 @@ export async function checkTransaction(tx: any, env: any) {
     })
   );
   const spend = Date.now() - start;
-  console.log(result, "spend", spend);
   return result.filter(_ => _);
 }
 

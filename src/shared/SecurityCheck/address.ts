@@ -101,6 +101,7 @@ const nameMapping: any = {
 };
 
 export async function checkTransaction(tx: any, env: any) {
+  if (!tx.to) return;
   const isWatch = checkNames.includes(tx.name);
   if (isWatch && tx.args) {
     const index = nameMapping[tx.name];
@@ -127,7 +128,9 @@ export async function checkTransaction(tx: any, env: any) {
           status: 1,
           name: "Address Check",
           type: "address-check",
+          address,
           message: `${address} has been blocked by ${source}`,
+          shareText: `${address} has been blocked by ${source}`,
           goPlus: state,
         };
       }
@@ -145,6 +148,10 @@ export async function checkTransaction(tx: any, env: any) {
           name: "Address Check",
           type: "address-check",
           message: message,
+          address,
+          shareText: `${address} Has a lot of suspicious transaction: ${
+            stats.highlightActions[0].functionName.split("(")[0]
+          }`,
           stats,
           goPlus: state,
         };

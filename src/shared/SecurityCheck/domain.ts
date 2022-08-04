@@ -15,6 +15,7 @@ export async function checkTransaction(tx: any, env: any) {
       status: scam ? 1 : 0,
       type: "domain",
       name: "Domain Check",
+      shareText: scam ? `Fake ${scam.name} ${scam.externalUrl}` : null,
       message: !scam
         ? "No similar project domains found"
         : `This site similar to ${scam.externalUrl} - ${scam.name} `,

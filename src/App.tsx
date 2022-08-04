@@ -20,6 +20,7 @@ import IconButton from "@mui/material/IconButton";
 import FireWall from './Interface/FireWall';
 import {
   createShadowRootForwardedComponent,
+  createShadowRootForwardedPopperComponent,
 } from "./ShadowRoot/Portal";
 import { formatAction } from "./FireWall/Tx";
 import { reportScam } from "@scamsniffer/detector";
@@ -36,21 +37,40 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
+import Tooltip, { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
+import SendIcon from "@mui/icons-material/Send";
+import CancelIcon from "@mui/icons-material/Cancel";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+
+
+const CustomIndexTooltip = styled(({ className, ...props }: TooltipProps) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))({
+  zIndex: 2147483088,
+});
 
 export const ShadowRootDialog: typeof Dialog = createShadowRootForwardedComponent(Dialog) as any;
+export const ShadowRootTooltip: typeof Tooltip =
+  createShadowRootForwardedPopperComponent(CustomIndexTooltip) as any;
 
 let approveWaiter: CallBack | null = null;
 
 const WarringDialog = styled(ShadowRootDialog)`
+  z-index: 2147483000;
   .MuiPaper-root {
     background-color: black;
   }
 `;
 
+
+
 const darkModeTheme = createTheme({
   palette: {
     mode: "dark",
   },
+  components: {
+    
+  }
 });
 
 function dumpWindowCheck() {
@@ -108,6 +128,7 @@ export default function AlertDialog({ firewall }: { firewall: Inspector }) {
   const [action, setAction] = React.useState<null | any>(null);
   const { t, i18n } = useTranslation();
   const [checking, setCheckIng] = React.useState(false);
+  const [warningInfo, setWarningInfo] = React.useState<string | null>(null);
   const [checkListResult, setCheckResults] = React.useState<any[]>([]);
   const pageHost = window.location.host;
 
@@ -132,8 +153,32 @@ export default function AlertDialog({ firewall }: { firewall: Inspector }) {
       setCheckIng(true)
       const pageEnv = getPageEnv();
       setCheckResults([]);
+      setWarningInfo(null);
       const checkResults = await checkTransaction(action.raw, pageEnv);
-      // console.log("checkResults", action,pageEnv.host, checkResults);
+      const hasIssues = checkResults.filter(
+        (_) => _ && _.status != 0 && _.shareText
+      );
+      if (hasIssues.length) {
+        const issues = hasIssues.map(_ => _.shareText).join("\n- ")
+        setWarningInfo(
+          `#PotentialScamAlert found ${pageEnv.host.replace(
+            new RegExp("\\.", "g"),
+            "[.]"
+          )} via @realScamSniffer, Security issues found: \n- ${issues}`
+        );
+        try {
+          reportScam({
+            slug: "unknown",
+            name: "unknown",
+            externalUrl: null,
+            twitterUsername: null,
+            matchType: "firewall_report",
+            post: {
+              links: [window.location.href],
+            },
+          });
+        } catch(e) {}
+      }
       setCheckResults(checkResults);
       setCheckIng(false);
     };
@@ -158,6 +203,15 @@ export default function AlertDialog({ firewall }: { firewall: Inspector }) {
 
   const handleAppClose = () => {
     setAppOpen(false)
+  }
+
+  const shareToMedia = () => {
+    if (!warningInfo) return;
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+      warningInfo
+    )}`;
+
+    window.open(url);
   }
 
   const handReport = () => {
@@ -228,11 +282,11 @@ export default function AlertDialog({ firewall }: { firewall: Inspector }) {
           </ButtonBase>
         </DialogTitle>
         <DialogContent style={{ padding: "0" }} dividers>
-          <div style={{ width: "420px" }}>
+          <div style={{ width: "450px" }}>
             {action ? (
               <div style={{ textAlign: "center", color: "#f4f4f4" }}>
                 <div style={{ padding: "10px 0 18px 0" }}>
-                  <div style={{paddingTop: '7px'}}>
+                  <div style={{ paddingTop: "7px" }}>
                     {checking ? (
                       <CircularProgress />
                     ) : checkListResult.filter((_) => _.status === 1).length ? (
@@ -340,7 +394,6 @@ export default function AlertDialog({ firewall }: { firewall: Inspector }) {
           >
             {t("report")}
           </Button> */}
-
           <Grid
             container
             item
@@ -354,15 +407,37 @@ export default function AlertDialog({ firewall }: { firewall: Inspector }) {
             <Button
               onClick={handleReject}
               variant="outlined"
+              startIcon={<CancelIcon />}
               style={{
                 marginRight: "20px",
               }}
             >
               {t("reject")}
             </Button>
-            <Button onClick={handApprove} autoFocus variant="contained">
+            <Button
+              onClick={handApprove}
+              endIcon={<ArrowForwardIcon />}
+              variant="contained"
+            >
               {t("approve")}
             </Button>
+            {warningInfo ? (
+              <ShadowRootTooltip
+                arrow
+                title="Warning others to avoid potential scams"
+                placement="top-start"
+              >
+                <Button
+                  endIcon={<SendIcon />}
+                  onClick={shareToMedia}
+                  style={{
+                    marginLeft: "20px",
+                  }}
+                >
+                  Share
+                </Button>
+              </ShadowRootTooltip>
+            ) : null}
           </Grid>
 
           {/* <Grid container spacing={2} style={{ paddingBottom: "8px" }}>

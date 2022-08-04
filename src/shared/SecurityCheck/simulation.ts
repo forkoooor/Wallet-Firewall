@@ -9,7 +9,7 @@ const ERC20ABIList = [
 const ERC721ABIList = [
   "event ApprovalForAll(address indexed owner, address indexed operator, bool approved);",
   "event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);",
-  "event Approval(address indexed owner, address indexed approved, uint256 indexed tokenId);",
+  "event Approval(address indexed owner, address indexed spender, uint256 indexed tokenId);",
 ];
 
 const ERC721Parser = new ethers.utils.Interface(ERC721ABIList);
@@ -65,6 +65,7 @@ async function simulateTx(tx: any) {
 }
 
 export async function checkTransaction(tx: any, env: any) {
+  if (!tx.to) return;
   let message = [];
   let status = 0;
   let logs = [];
@@ -73,6 +74,7 @@ export async function checkTransaction(tx: any, env: any) {
   let parsedEvents: any[] = [];
   let logsByName: any = {};
   let from = tx.from.toLowerCase();
+  let recipient = null;
   try {
     result = await simulateTx(tx);
     transaction = result.transaction;
@@ -96,6 +98,25 @@ export async function checkTransaction(tx: any, env: any) {
           }
         });
 
+         if (logsByName["Approval"]) {
+           const approveToOthers = logsByName["Approval"].filter(
+             (event: any) => {
+               return (
+                 event.args.owner.toLowerCase() === from
+               );
+             }
+           );
+           // console.log("approveToOthers", approveToOthers);
+           if (approveToOthers.length) {
+
+             status = 2;
+             recipient = approveToOthers[0].args.spender;
+             message.push(
+               `This transaction will approve authority to ${approveToOthers[0].args.spender}`
+             );
+           }
+         }
+
         if (logsByName['ApprovalForAll']) {
           const approveToOthers = logsByName["ApprovalForAll"].filter(
             (event: any) => {
@@ -107,6 +128,7 @@ export async function checkTransaction(tx: any, env: any) {
           // console.log("approveToOthers", approveToOthers);
           if (approveToOthers.length) {
             status = 1;
+            recipient = approveToOthers[0].args.operator;
             message.push(
               `This transaction will approve authority to ${approveToOthers[0].args.operator}`
             );
@@ -122,7 +144,8 @@ export async function checkTransaction(tx: any, env: any) {
           });
           // console.log('sendOut', sendOut)
           if (sendOut.length) {
-            status = 1;
+            status = 2;
+            recipient = sendOut[0].args.to;
             message.push(
               `This transaction will transfer ${sendOut.length} Token to ${sendOut[0].args.to}`
             );
@@ -133,10 +156,6 @@ export async function checkTransaction(tx: any, env: any) {
              );
           }
         }
-        // const logsByName = parsedEvents.reduce(() => {
-        // })
-        // transaction.logs.push*()
-        // message.push(JSON.stringify(transaction.logs, null, 2));
       }
     }
   } catch (e) {}
@@ -146,7 +165,15 @@ export async function checkTransaction(tx: any, env: any) {
     type: "simulation",
     status,
     transaction,
+    address: recipient,
+    shareText: status
+      ? `Transaction simulation detect risky behavior(${Object.keys(
+          logsByName
+        )})`
+      : null,
     message:
-      result && result.transaction ? message.join("\n\n") : "run simulation failed",
+      result && result.transaction
+        ? message.join("\n\n")
+        : "run   simulation failed",
   };
 }

@@ -101,11 +101,11 @@ export default class Handler {
             },
             apply: function (target: any, thisArg: any, argumentsList: any) {
               const functionName = getTargetName(target);
-              pageActions.push({
-                type: "call",
-                key: [getTargetName(target)].join("."),
-                args: argumentsList,
-              });
+              // pageActions.push({
+              //   type: "call",
+              //   key: [getTargetName(target)].join("."),
+              //   args: argumentsList,
+              // });
               const needBlock = context.executeHandler(
                 functionName,
                 argumentsList,
@@ -118,12 +118,12 @@ export default class Handler {
                     if (blocked) {
                       resolve(null);
                     } else {
-                      resolve(target.apply(thisArg, argumentsList));
+                      resolve(Reflect.apply(target, thisArg, argumentsList));
                     }
                   })();
                 });
               } else {
-                return target.apply(thisArg, argumentsList);
+                return Reflect.apply(target, thisArg, argumentsList);
               }
             },
           });
@@ -148,7 +148,7 @@ export default class Handler {
         //   key: [getTargetName(target)].join("."),
         //   args: argumentsList,
         // });
-        return target.apply(thisArg, argumentsList);
+        return Reflect.apply(target, thisArg, argumentsList);
       },
     };
     return proxyHandler;

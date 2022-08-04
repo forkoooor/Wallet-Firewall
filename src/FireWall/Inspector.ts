@@ -61,7 +61,7 @@ export default class Inspector {
     this.handler.registerHandler("request", (args: any, consumer: any) => {
       const parsedAction = parseRequest(args[0]);
       const state = context.ruleManager.process(parsedAction);
-      // console.log("WalletFirewall", "request", parsedAction, state);
+      // console.log("WalletFirewall", "request", parsedAction, args);
       if (state === 'ask') {
         // notify ui and wait result
         if (context.approver && parsedAction) {
@@ -86,7 +86,7 @@ export default class Inspector {
   }
 
   async listen() {
-    for (let index = 0; index < 500; index++) {
+    for (let index = 0; index < 10000; index++) {
       let allInjected = this.tryInject();
       if (allInjected) break;
       await new Promise((resolve) => {
@@ -104,8 +104,11 @@ export default class Inspector {
     }
 
     const existsNamespaces: any[] = [];
-    /* @ts-ignore */
-    if (typeof window.ethereum !== "undefined") {
+    if (
+      /* @ts-ignore */
+      typeof window.ethereum !== "undefined" &&
+      !context.injected.has("ethereum")
+    ) {
       const proxyHandler = this.handler.inject({
         process(log: any) {
           context.broadcast(log);
@@ -118,8 +121,11 @@ export default class Inspector {
       context.injected.add("ethereum");
     }
 
-    /* @ts-ignore */
-    if (typeof window.web3 !== "undefined") {
+    if (
+      /* @ts-ignore */
+      typeof window.web3 !== "undefined" &&
+      !context.injected.has("currentProvider")
+    ) {
       const proxyHandler = this.handler.inject({
         process(log: any) {
           context.broadcast(log);
