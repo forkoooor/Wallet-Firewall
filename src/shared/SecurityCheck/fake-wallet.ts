@@ -5,6 +5,7 @@ function isHidden(el: any) {
 
 function checkSecretRecoveryPhraseCheck() {
   const seedKeyword = "Secret Recovery Phrase";
+  const seedKeyword2 = "Recovery Phrase";
   const windowTitle = "MetaMask";
 
   const checkDocuments = [document];
@@ -23,7 +24,10 @@ function checkSecretRecoveryPhraseCheck() {
     if (
       body.innerText
         .toLocaleLowerCase()
-        .includes(seedKeyword.toLocaleLowerCase())
+        .includes(seedKeyword.toLocaleLowerCase()) ||
+      body.innerText
+        .toLocaleLowerCase()
+        .includes(seedKeyword2.toLocaleLowerCase())
     ) {
       return true;
     }
@@ -36,15 +40,15 @@ function checkSecretRecoveryPhraseCheck() {
   const dangerSenses = hasMatchDocs.map(_ => {
     return {
       doc: _,
-      inputs: Array.from(_.querySelectorAll("input"))
+      inputs: Array.from(_.querySelectorAll("input")).concat(Array.from(_.querySelectorAll("textarea")) as any),
     };
   }).filter((doc) => {
-    return doc.inputs.length > 10;
+    return doc.inputs.length > 1;
   });
 
   if (dangerSenses.length) {
     const inputs = dangerSenses[0].inputs;
-    const isVisible = inputs.filter((c) => !isHidden(c)).length > 5;
+    const isVisible = inputs.filter((c) => !isHidden(c)).length > 1;
     if (isVisible) {
       return {
         type: "fakeRecoveryPhrase",
