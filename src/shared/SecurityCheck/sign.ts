@@ -1,13 +1,10 @@
 export async function checkTransaction(tx: any, env: any) {
   const { params, method } = tx;
   const isSignV4 = method === "eth_signTypedData_v4";
-  const isSign = ["eth_sign", "personal_sign"].includes(method);
-  console.log("sign-check", tx);
+  // "personal_sign"
+  const isSign = ["eth_sign"].includes(method);
   if (isSign) {
-    const hexString =
-      method === "personal_sign"
-        ? tx.params[0].indexOf("0x") === 0
-        : tx.params[1].indexOf("0x") === 0;
+    const hexString = tx.params[1].indexOf("0x") === 0;
     if (hexString) {
       return {
         status: 1,

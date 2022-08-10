@@ -24,7 +24,7 @@ import {
 } from "./ShadowRoot/Portal";
 import { formatAction } from "./FireWall/Tx";
 import { reportScam } from "@scamsniffer/detector";
-import { checkTransaction } from './shared/api';
+import { checkTransaction, checkPage } from './shared/api';
 import CircularProgress from "@mui/material/CircularProgress";
 import Divider from '@mui/material/Divider';
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
@@ -41,7 +41,7 @@ import Tooltip, { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
 import SendIcon from "@mui/icons-material/Send";
 import CancelIcon from "@mui/icons-material/Cancel";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 
 const CustomIndexTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
@@ -62,8 +62,6 @@ const WarringDialog = styled(ShadowRootDialog)`
   }
 `;
 
-
-
 const darkModeTheme = createTheme({
   palette: {
     mode: "dark",
@@ -72,6 +70,41 @@ const darkModeTheme = createTheme({
     
   }
 });
+
+import {
+  DOMProxy,
+  LiveSelector,
+  MutationObserverWatcher,
+} from "@holoflows/kit";
+
+
+// function watchPage() {
+//   const bodyEl = new LiveSelector().querySelectorAll<HTMLDivElement>("body");
+//   new MutationObserverWatcher(bodyEl)
+//     .useForeach((node, key, metadata) => {
+//       console.log("node", node, key, metadata);
+//       return {
+//         onNodeMutation: () => {
+//           console.log("onNodeMutation");
+//         },
+//         onRemove: () => {
+//           console.log("onRemove");
+//         },
+//         onTargetChanged: () => {
+//           console.log("onChange");
+//         },
+//       };
+//     })
+
+//     .startWatch({
+//       subtree: true,
+//       childList: true,
+//       attributes: true,
+//       attributeOldValue: true
+//     });
+// }
+
+// watchPage();
 
 function dumpWindowCheck() {
     var names = [];
@@ -130,7 +163,32 @@ export default function AlertDialog({ firewall }: { firewall: Inspector }) {
   const [checking, setCheckIng] = React.useState(false);
   const [warningInfo, setWarningInfo] = React.useState<string | null>(null);
   const [checkListResult, setCheckResults] = React.useState<any[]>([]);
+  const [pageCheckResult, setPageCheckResult] = React.useState<any>(null);
   const pageHost = window.location.host;
+
+  useEffect(
+    () => {
+      let timer1 = setInterval(async () => {
+        const result = await checkPage();
+        if (result.length) {
+          setPageCheckResult(result[0]);
+          if (timer1) clearInterval(timer1);
+        }
+      }, 5 * 1000);
+      // this will clear Timeout
+      // when component unmount like in willComponentUnmount
+      // and show will not change to true
+      return () => {
+        if (timer1) clearInterval(timer1);
+      };
+    },
+    // useEffect will run only one time with empty []
+    // if you pass a value to array,
+    // like this - [data]
+    // than clearTimeout will run every time
+    // this value changes (useEffect re-run)
+    []
+  );
 
   useEffect(() => {
     firewall.listenRequest(async (action: any) => {
@@ -205,6 +263,10 @@ export default function AlertDialog({ firewall }: { firewall: Inspector }) {
     setAppOpen(false)
   }
 
+  const handlePageAlertAppClose = () => {
+    setPageCheckResult(null)
+  };
+
   const shareToMedia = () => {
     if (!warningInfo) return;
     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
@@ -213,6 +275,19 @@ export default function AlertDialog({ firewall }: { firewall: Inspector }) {
 
     window.open(url);
   }
+
+   const shareToMediaPage = () => {
+     const pageEnv = getPageEnv();
+     const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+       `#PotentialScamAlert found ${pageEnv.host.replace(
+         new RegExp("\\.", "g"),
+         "[.]"
+       )} via @realScamSniffer, Security issues found: \n- Fake Secret Recovery Phrase Detected`
+     )}`;
+
+     window.open(url);
+   };
+
 
   const handReport = () => {
     reportScam({
@@ -257,6 +332,133 @@ export default function AlertDialog({ firewall }: { firewall: Inspector }) {
         </DialogContent>
         <DialogActions></DialogActions>
       </ShadowRootDialog>
+      <WarringDialog
+        open={pageCheckResult !== null}
+        onClose={handlePageAlertAppClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        maxWidth="xl"
+        style={{}}
+      >
+        <DialogTitle
+          id="alert-dialog-title"
+          style={{ color: "white", textAlign: "center" }}
+        >
+          <ButtonBase
+            sx={{ width: 200, height: 45 }}
+            onClick={() =>
+              window.open("https://scamsniffer.io?utm_source=firewall-logo")
+            }
+            style={{ marginRight: "-20px", marginTop: "0px" }}
+          >
+            <img
+              src="https://scamsniffer.io/assets/logo-light.png"
+              height={32}
+            />
+          </ButtonBase>
+        </DialogTitle>
+        <DialogContent style={{ padding: "0" }} dividers>
+          <div style={{ width: "450px" }}>
+            {
+              <div style={{ textAlign: "center", color: "#f4f4f4" }}>
+                <div style={{ padding: "10px 0 18px 0" }}>
+                  <div style={{ paddingTop: "7px" }}>
+                    <WarningAmberIcon
+                      style={{ fontSize: "45px", color: "#ec2e2e" }}
+                    />
+                  </div>
+                  <div style={{ fontSize: "18px", margin: "7px 0" }}>
+                    Security Check
+                    <a
+                      href="https://docs.scamsniffer.io/browser-extension/security-check"
+                      target="_blank"
+                      style={{
+                        color: "white",
+                      }}
+                    >
+                      <HelpOutlineIcon
+                        style={{
+                          verticalAlign: "-3px",
+                          fontSize: "18px",
+                          marginLeft: "8px",
+                        }}
+                      />
+                    </a>
+                  </div>
+                  <div
+                    style={{
+                      fontSize: "13px",
+                      color: "rgba(255, 255, 255, 0.7)",
+                    }}
+                  >
+                    {pageHost}
+                  </div>
+                </div>
+                {pageCheckResult ? <Divider variant="middle" /> : null}
+                {pageCheckResult && (
+                  <List>
+                    <ListItem>
+                      <ListItemIcon>
+                        <WarningAmberIcon
+                          style={{
+                            fontSize: "20px",
+                            color: "#ec2e2e",
+                          }}
+                        />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={pageCheckResult.title}
+                        secondary={pageCheckResult.message}
+                      />
+                    </ListItem>
+                  </List>
+                )}
+              </div>
+            }
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Grid
+            container
+            item
+            xs={12}
+            sm
+            direction="row"
+            spacing={1}
+            style={{ padding: "20px 0 15px 0" }}
+            justifyContent="center"
+          >
+            <Button
+              onClick={handleAppClose}
+              variant="outlined"
+              startIcon={<CancelIcon />}
+              style={{
+                marginRight: "20px",
+              }}
+            >
+              {t("reject")}
+            </Button>
+            {
+              <ShadowRootTooltip
+                arrow
+                title="Warning others to avoid potential scams"
+                placement="top-start"
+              >
+                <Button
+                  endIcon={<SendIcon />}
+                  onClick={shareToMediaPage}
+                  style={{
+                    marginLeft: "20px",
+                  }}
+                >
+                  Share
+                </Button>
+              </ShadowRootTooltip>
+            }
+          </Grid>
+        </DialogActions>
+      </WarringDialog>
+
       <WarringDialog
         open={open}
         onClose={handleReject}
@@ -305,6 +507,21 @@ export default function AlertDialog({ firewall }: { firewall: Inspector }) {
                   </div>
                   <div style={{ fontSize: "18px", margin: "7px 0" }}>
                     Security Check
+                    <a
+                      href="https://docs.scamsniffer.io/browser-extension/security-check"
+                      target="_blank"
+                      style={{
+                        color: "white",
+                      }}
+                    >
+                      <HelpOutlineIcon
+                        style={{
+                          verticalAlign: "-3px",
+                          fontSize: "18px",
+                          marginLeft: "8px",
+                        }}
+                      />
+                    </a>
                   </div>
                   <div
                     style={{
@@ -317,9 +534,9 @@ export default function AlertDialog({ firewall }: { firewall: Inspector }) {
                 </div>
                 {checkListResult.length ? <Divider variant="middle" /> : null}
                 <List>
-                  {checkListResult.map((result: any) => {
+                  {checkListResult.map((result: any, index: any) => {
                     return (
-                      <ListItem>
+                      <ListItem key={index}>
                         <ListItemIcon>
                           {result.status ? (
                             <WarningAmberIcon

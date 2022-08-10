@@ -5,6 +5,7 @@ specifiers:
   '@emotion/cache': ^11.9.3
   '@emotion/react': 11.9.0
   '@emotion/styled': 11.8.1
+  '@holoflows/kit': ^0.9.0
   '@mui/icons-material': ^5.8.3
   '@mui/material': 5.8.0
   '@mui/x-data-grid': ^5.12.1
@@ -31,6 +32,7 @@ dependencies:
   '@emotion/cache': 11.9.3
   '@emotion/react': 11.9.0_wxgusdfbxxwet6cmavgtkqjzgq
   '@emotion/styled': 11.8.1_r6u3borduxfwp2etuklzu6wp54
+  '@holoflows/kit': 0.9.0
   '@mui/icons-material': 5.8.3_t7kxnx6tdf3ehm6efzitgizftq
   '@mui/material': 5.8.0_meafyvi377g3gvveqhk35ofhqa
   '@mui/x-data-grid': 5.12.1_edfjojp7odepx4g5f5pv7vediu
@@ -3154,6 +3156,17 @@ packages:
       '@hapi/hoek': 8.5.1
     dev: false
 
+  /@holoflows/kit/0.9.0:
+    resolution: {integrity: sha512-OB6bXgSl2KyG8SJWlSmBce2jKqH5t5EnPfvxK/sEogulY4FWeiGhNnojgyyYvdqNr5OTZqhmX7HGdRzuWO65Ig==}
+    peerDependencies:
+      webextension-polyfill: '*'
+    dependencies:
+      '@servie/events': 3.0.0
+      event-iterator: 2.0.0
+      lodash-es: 4.17.21
+      tslib: 2.4.0
+    dev: false
+
   /@humanwhocodes/config-array/0.5.0:
     resolution: {integrity: sha512-FagtKFz74XrTl7y6HCzQpwDfXP0yhxe9lHLD1UZxjvZIcbyRz8zTFF/yYNfSfzU414eDwZ1SrO0Qvtyf+wFMQg==}
     engines: {node: '>=10.10.0'}
@@ -3760,6 +3773,10 @@ packages:
       - esbuild
       - jest
       - typescript
+    dev: false
+
+  /@servie/events/3.0.0:
+    resolution: {integrity: sha512-Zd79bWhTuG8NvPgSiOcivorJIDg+goMw76TIqYTIR5ua5HOEkS29fmIh2VVSeDeabNF6z8ceTwzB0pSh/BhXyw==}
     dev: false
 
   /@sinclair/typebox/0.23.5:
@@ -7505,6 +7522,10 @@ packages:
       - utf-8-validate
     dev: false
 
+  /event-iterator/2.0.0:
+    resolution: {integrity: sha512-KGft0ldl31BZVV//jj+IAIGCxkvvUkkON+ScH6zfoX+l+omX6001ggyRSpI0Io2Hlro0ThXotswCtfzS8UkIiQ==}
+    dev: false
+
   /eventemitter3/4.0.7:
     resolution: {integrity: sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==}
     dev: false
@@ -9969,6 +9990,10 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       p-locate: 5.0.0
+    dev: false
+
+  /lodash-es/4.17.21:
+    resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==}
     dev: false
 
   /lodash-unified/1.0.2:
