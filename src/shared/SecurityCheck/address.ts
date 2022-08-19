@@ -37,6 +37,7 @@ function tryAnalyticRecentTx(txList: any) {
   let totalTx = txList.result.length;
   const functionStats: any = {};
   txList.result.forEach((tx: any) => {
+    if (!tx) return;
     if (tx.nonce > maxNonce) {
       maxNonce = parseInt(tx.nonce);
     }
@@ -136,25 +137,29 @@ export async function checkTransaction(tx: any, env: any) {
       }
 
       if (recentTxs) {
-        const stats = await tryAnalyticRecentTx(recentTxs);
-        let message = "The address is normal";
-        if (stats.highlightActions.length) {
-          message = `${address} Has a lot of suspicious transaction: ${
-            stats.highlightActions[0].functionName.split("(")[0]
-          }`;
+        try {
+          const stats = await tryAnalyticRecentTx(recentTxs);
+          let message = "The address is normal";
+          if (stats.highlightActions.length) {
+            message = `${address} Has a lot of suspicious transaction: ${
+              stats.highlightActions[0].functionName.split("(")[0]
+            }`;
+          }
+          return {
+            status: stats.highlightActions.length ? 2 : 0,
+            name: "Address Check",
+            type: "address-check",
+            message: message,
+            address,
+            shareText: `${address} Has a lot of suspicious transaction: ${
+              stats.highlightActions[0].functionName.split("(")[0]
+            }`,
+            stats,
+            goPlus: state,
+          };
+        } catch(e) {
+          
         }
-        return {
-          status: stats.highlightActions.length ? 2 : 0,
-          name: "Address Check",
-          type: "address-check",
-          message: message,
-          address,
-          shareText: `${address} Has a lot of suspicious transaction: ${
-            stats.highlightActions[0].functionName.split("(")[0]
-          }`,
-          stats,
-          goPlus: state,
-        };
       }
     }
   }

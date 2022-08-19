@@ -1,5 +1,47 @@
 const keccakHashSize = 66;
 
+const permitType = [
+  { name: 'owner', type: 'address' },
+  { name: 'spender', type: 'address' },
+  { name: 'value', type: 'uint256' },
+  { name: 'nonce', type: 'uint256' },
+  { name: 'deadline', type: 'uint256' }
+];
+
+function toId(array1: any) {
+  let id = '';
+  array1.forEach((c: any) => {
+    id += `${c.name}:${c.type}`;
+  })
+  return id
+}
+
+function compareTypes(array1: any, array2: any) {
+  const id1 = toId(array1);
+  const id2 = toId(array2)
+  return id2 === id1;
+}
+
+function checkPermitPayload(payload: any) {
+  const { primaryType, types, domain, message } = payload;
+  const typeDef = types[primaryType];
+  const isPermitType = compareTypes(typeDef, permitType)
+  if (isPermitType) {
+    const formattedMsg = `Sign-request detected, Approve ${message.spender} to spend your ${domain.name} with limit ${message.value}`
+    console.log('isSame', formattedMsg)
+    return {
+      status: 1,
+      name: "Sign Check",
+      type: "sign-check",
+      address: message.spender,
+      shareText: formattedMsg,
+      message: formattedMsg,
+    };
+  }
+}
+
+
+
 export async function checkTransaction(tx: any, env: any) {
   const { params, method } = tx;
   const isSignV4 = method === "eth_signTypedData_v4";
@@ -40,6 +82,13 @@ export async function checkTransaction(tx: any, env: any) {
           };
         }
       }
+
+      try {
+        const checkResult = checkPermitPayload(payload);
+        if (checkResult) {
+          return checkResult;
+        }
+      } catch(e) {}
     }
   return null;
 } 
