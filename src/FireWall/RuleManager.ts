@@ -32,9 +32,11 @@ export default class RuleManager {
     });
   }
 
-  process(action: any) {
+  process(action: any, options: any) {
     let state = "pass";
+    let { chainId } = options;
     if (!action) return state;
+
     const { passRules, blockRules, askRules } = this.rulesByType;
     const matchPass = this.checkRules(passRules, action);
     if (!matchPass) {

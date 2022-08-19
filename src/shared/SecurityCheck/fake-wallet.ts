@@ -37,13 +37,22 @@ function checkSecretRecoveryPhraseCheck() {
     return false;
   });
 
-  const dangerSenses = hasMatchDocs.map(_ => {
+  let dangerSenses = hasMatchDocs.map(_ => {
     return {
       doc: _,
-      inputs: Array.from(_.querySelectorAll("input")).concat(Array.from(_.querySelectorAll("textarea")) as any),
+      inputs: Array.from(_.querySelectorAll("input")),
+      textarea: Array.from(_.querySelectorAll("textarea")),
     };
   }).filter((doc) => {
-    return doc.inputs.length > 1;
+    // make sure input is match 12
+    const inputOver = doc.inputs.length > 10;
+    const inputTextarea = doc.textarea.filter(el => {
+      const placeholder = el.getAttribute('placeholder');
+      // Typically 12 (sometimes 24) words separated by a single spaces.
+      const match = placeholder && placeholder.includes('12') && placeholder.includes('separated') &&  placeholder.includes('single') &&  placeholder.includes('space')
+      return match;
+    }).length > 0;
+    return inputOver || inputTextarea;
   });
 
   if (dangerSenses.length) {

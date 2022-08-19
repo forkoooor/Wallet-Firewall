@@ -8,21 +8,27 @@ import * as sign from "./SecurityCheck/sign";
 
 import * as fakeWallet from "./SecurityCheck/fake-wallet";
 
-const checkList = [
+const commonCheckList: any[] = [
   domain,
   sign,
+  malicious,
+];
+
+const checkList: any[] = [
   contract,
   allowlist,
   simulation,
   address,
-  malicious,
 ];
+
 const pageCheckList = [fakeWallet];
 
 export async function checkTransaction(tx: any, env: any) {
   const start = Date.now();
+  const toCheckList = env.chainId === '0x1' ? commonCheckList.concat(checkList) : commonCheckList;
+  console.log('checkTransaction', env, toCheckList.length)
   const result = await Promise.all(
-    checkList.map((_: any) => {
+    toCheckList.map((_: any) => {
       return _.checkTransaction(tx, env);
     })
   );

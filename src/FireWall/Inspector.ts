@@ -29,6 +29,10 @@ export default class Inspector {
     this.listen();
   }
 
+  isDebug() {
+    return typeof window != 'undefined' && window.location.hash === '#debug'
+  }
+
   getLogs() {
     return JSON.parse(JSON.stringify(this.logs));
   }
@@ -60,8 +64,12 @@ export default class Inspector {
     const context = this;
     this.handler.registerHandler("request", (args: any, consumer: any) => {
       const parsedAction = parseRequest(args[0]);
-      const state = context.ruleManager.process(parsedAction);
-      // console.log("WalletFirewall", "request", parsedAction, args);
+      /* @ts-ignore */
+      const chainId = window.ethereum.chainId;
+      const state = context.ruleManager.process(parsedAction, {
+        chainId
+      });
+      if (this.isDebug()) console.log("WalletFirewall", "request", parsedAction, args);
       if (state === 'ask') {
         // notify ui and wait result
         if (context.approver && parsedAction) {
@@ -99,7 +107,14 @@ export default class Inspector {
     const namespaces = ["ethereum", "web3.currentProvider"];
     const context = this;
 
+    if (this.isDebug()) {
+      console.log('tryInject',  new Date())
+    }
+
     if (namespaces.length === this.injected.size) {
+      if (this.isDebug()) {
+        console.log('all injected',  new Date())
+      }
       return true;
     }
 
@@ -119,6 +134,9 @@ export default class Inspector {
       /* @ts-ignore */
       window.ethereum = proxy;
       context.injected.add("ethereum");
+      if (this.isDebug()) {
+        console.log('ethereum injected', new Date())
+      }
     }
 
     if (
@@ -136,6 +154,9 @@ export default class Inspector {
       /* @ts-ignore */
       window.web3["currentProvider"] = proxy;
       context.injected.add("currentProvider");
+      if (this.isDebug()) {
+        console.log('currentProvider injected', new Date())
+      }
     }
 
     if (existsNamespaces.length) {

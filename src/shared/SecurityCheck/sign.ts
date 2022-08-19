@@ -1,10 +1,14 @@
+const keccakHashSize = 66;
+
 export async function checkTransaction(tx: any, env: any) {
   const { params, method } = tx;
   const isSignV4 = method === "eth_signTypedData_v4";
-  // "personal_sign"
-  const isSign = ["eth_sign"].includes(method);
+  // personal_sign
+  const isSign = ["eth_sign", "personal_sign"].includes(method);
   if (isSign) {
-    const hexString = tx.params[1].indexOf("0x") === 0;
+    const message = method === 'eth_sign' ? tx.params[1] : tx.params[0];
+    // verify keccak256 hash
+    const hexString = message.indexOf("0x") === 0 && message.length === keccakHashSize;
     if (hexString) {
       return {
         status: 1,
@@ -38,4 +42,4 @@ export async function checkTransaction(tx: any, env: any) {
       }
     }
   return null;
-}
+} 

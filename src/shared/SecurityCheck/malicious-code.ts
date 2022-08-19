@@ -5,9 +5,9 @@ export async function checkTransaction(tx: any, env: any) {
   let encodeFunctionCount = 0;
   let allKeys = env.windowKeys.keys;
   allKeys.forEach((_: any) => {
-    const funcCode = _.code;
+    const key = _.key;
     // start with _0x
-    if (funcCode.indexOf("_0x") === 0) {
+    if (key.indexOf("_0x") === 0) {
       encodeFunctionCount++;
     }
   });
