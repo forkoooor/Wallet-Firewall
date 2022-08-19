@@ -29,7 +29,8 @@ function checkPermitPayload(payload: any) {
   if (isPermitType) {
     const formattedMsg = `Sign-request detected, Approve ${message.spender} to spend your ${domain.name} with limit ${message.value}`
     return {
-      status: 1,
+      // warning
+      status: 2,
       name: "Sign Check",
       type: "sign-check",
       address: message.spender,
