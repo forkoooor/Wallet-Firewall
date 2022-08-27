@@ -40,7 +40,7 @@ function checkSecretRecoveryPhraseCheck() {
   let dangerSenses = hasMatchDocs.map(_ => {
     return {
       doc: _,
-      inputs: Array.from(_.querySelectorAll("input[type=input]")),
+      inputs: Array.from(_.querySelectorAll("input[type=text]")),
       textarea: Array.from(_.querySelectorAll("textarea")),
     };
   }).filter((doc) => {

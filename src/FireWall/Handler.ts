@@ -1,4 +1,5 @@
 import { parseRequest } from "./Tx";
+import { getConfig, watchConfig, updateFirewallConfig } from "../config/index";
 
 function getTargetName(target: Function) {
   return target.name.replace("bound ", "");
@@ -72,84 +73,44 @@ export default class Handler {
         }
       },
     };
+
+    const proxyMethods = ['request', 'send', 'sendAsync']
     const proxyHandler = {
       get: function (target: any, key: any, receiver: any) {
+        try {
+          const config = getConfig();
+          if (!proxyMethods.includes(key) || config.isDisabled) {
+            return Reflect.get(target, key, receiver);
+          }
+
+          const functionName = key;
+          const originalRef = Reflect.get(target, key, receiver);
+          return async (...args: any) => {
+            const needBlock = context.executeHandler(
+              functionName,
+              args,
+              consumer
+            );
+            console.log('call', functionName, needBlock, args)
+            if (needBlock) {
+              const blocked = await needBlock();
+                if (blocked) {
+                  return null
+                } else {
+                  return originalRef(...args); 
+                }
+            } else {
+              return originalRef(...args);
+            }
+          }
+        } catch(e) {}
         // pageActions.push({
         //   type: "get",
         //   key,
         // });
-        if (target[key] instanceof Object) {
-          return new Proxy(target[key], {
-            get: function (a: any, b: any, c: any) {
-              // pageActions.push({
-              //   type: "get",
-              //   key: [key, b].join("."),
-              // });
-              return a[b];
-            },
-            set: function (a: any, b: any, c: any, d: any) {
-              // pageActions.push({
-              //   type: "set",
-              //   key: [key, b].join("."),
-              // });
-              try {
-                a[b] = c;
-                return true;
-              } catch (e) {
-                return false;
-              }
-            },
-            apply: function (target: any, thisArg: any, argumentsList: any) {
-              const functionName = getTargetName(target);
-              // pageActions.push({
-              //   type: "call",
-              //   key: [getTargetName(target)].join("."),
-              //   args: argumentsList,
-              // });
-              const needBlock = context.executeHandler(
-                functionName,
-                argumentsList,
-                consumer
-              );
-              if (needBlock) {
-                return new Promise((resolve, reject) => {
-                  (async () => {
-                    const blocked = await needBlock();
-                    if (blocked) {
-                      resolve(null);
-                    } else {
-                      resolve(Reflect.apply(target, thisArg, argumentsList));
-                    }
-                  })();
-                });
-              } else {
-                return Reflect.apply(target, thisArg, argumentsList);
-              }
-            },
-          });
-        }
-        return target[key];
-      },
-      set: function (target: any, key: any, value: any, receiver: any) {
-        // pageActions.push({
-        //   type: "set",
-        //   key,
-        // });
-        try {
-          target[key] = value;
-          return true;
-        } catch (e) {
-          return false;
-        }
-      },
-      apply: function (target: any, thisArg: any, argumentsList: any) {
-        // pageActions.push({
-        //   type: "call",
-        //   key: [getTargetName(target)].join("."),
-        //   args: argumentsList,
-        // });
-        return Reflect.apply(target, thisArg, argumentsList);
-      },
+
+        return  Reflect.get(target, key, receiver);
+      }
     };
     return proxyHandler;
   }

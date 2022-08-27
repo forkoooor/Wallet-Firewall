@@ -27,9 +27,15 @@ function parseLog(log: any) {
   return null;
 }
 
-const SIMULATE_URL = `https://api.tenderly.co/api/v1/account/0xfun/project/gas/simulate`;
+async function simulateTx(tx: any, env: any) {
+  const simulation = env.config.simulation || {};
+  console.log('simulateTx', env, simulation)
+  const user = simulation.account || 'ScamSniffer';
+  const apiKey = simulation.apiKey || 'zam8lOrECdXk8zEJfN19cBnWTPYrOzh1';
+  const project = simulation.project || 'project';
+  const isCustom = typeof simulation.account != 'undefined';
 
-async function simulateTx(tx: any) {
+  const SIMULATE_URL = `https://api.tenderly.co/api/v1/account/${user}/project/${project}/simulate`;
   const body = {
     // standard TX fields
     network_id: "1",
@@ -47,7 +53,7 @@ async function simulateTx(tx: any) {
   try {
     const req = await fetch(SIMULATE_URL, {
       headers: {
-        "X-Access-Key": "1fUuNlidconDi1hhqnckDAdHznJ5hOTo",
+        "X-Access-Key": apiKey,
       },
       referrerPolicy: "strict-origin-when-cross-origin",
       body: JSON.stringify(body),
@@ -58,8 +64,9 @@ async function simulateTx(tx: any) {
 
     const result = await req.json();
     // console.log("result", result);
-    return result;
+    return [isCustom, result];
   } catch (e) {
+    console.log('error', e)
     return null;
   }
 }
@@ -75,9 +82,29 @@ export async function checkTransaction(tx: any, env: any) {
   let logsByName: any = {};
   let from = tx.from.toLowerCase();
   let recipient = null;
+  let reachLimit = false;
+  let isCustom = false;
+
+  const simulation = env.config.simulation || {};
+  const hasSetting = typeof simulation.account != 'undefined';
+  if (!hasSetting) {
+    return null;
+  }
+
   try {
-    result = await simulateTx(tx);
+    const res = await simulateTx(tx, env);
+    if (res) {
+      isCustom = res[0];
+      result = res[1]
+    } else {
+      return null;
+    }
+
     transaction = result.transaction;
+    if (result.error) {
+      reachLimit = result.error.message.includes('quota');
+      // reachLimit = true
+    }
 
     if (transaction) {
       if (transaction.error_message) {
@@ -160,10 +187,13 @@ export async function checkTransaction(tx: any, env: any) {
     }
   } catch (e) {}
   message.push("Simulation powered by Tenderly");
+  // if (!reachLimit && !result.transaction) {
+  //   return null;
+  // }
   return {
     name: "Simulating transaction",
     type: "simulation",
-    status,
+    status: reachLimit ? 2 : status,
     transaction,
     address: recipient,
     shareText: status
@@ -174,6 +204,6 @@ export async function checkTransaction(tx: any, env: any) {
     message:
       result && result.transaction
         ? message.join("\n\n")
-        : "run   simulation failed",
+        : reachLimit ?  isCustom ? result.error.message : 'Please set your Tenderly API key in setting page' : result.error.message + "\nSimulation powered by Tenderly",
   };
 }

@@ -5,6 +5,24 @@ import allRules from '../config/rules.json'
 
 type CallBack = (args: any) => void;
 
+function hookInstance(obj: any, name: any, handler: any ) {
+  // console.log('hookInstance')
+  let instance: any = obj[name], changed = true, proxyInstance: any;
+  Object.defineProperty(obj, name, {
+    get() {
+      if (changed && instance) {
+        proxyInstance = new Proxy(instance, handler);
+      }
+      return proxyInstance;
+    },
+    set(instance_: any) {
+      instance = instance_;
+      changed = true;
+    },
+    configurable: true,
+  });
+}
+
 export default class Inspector {
   approver: null | CallBack;
   handler: Handler;
@@ -62,7 +80,8 @@ export default class Inspector {
 
   proxy() {
     const context = this;
-    this.handler.registerHandler("request", (args: any, consumer: any) => {
+
+    const handler = (args: any, consumer: any) => {
       const parsedAction = parseRequest(args[0]);
       /* @ts-ignore */
       const chainId = window.ethereum.chainId;
@@ -86,7 +105,11 @@ export default class Inspector {
           return rejected;
         };
       }
-    });
+    };
+
+    this.handler.registerHandler("sendAsync", handler)
+    this.handler.registerHandler("send", handler)
+    this.handler.registerHandler("request", handler);
   }
 
   listenRequest(cb: any) {
@@ -94,72 +117,86 @@ export default class Inspector {
   }
 
   async listen() {
-    for (let index = 0; index < 10000; index++) {
-      let allInjected = this.tryInject();
-      if (allInjected) break;
-      await new Promise((resolve) => {
-        setTimeout(resolve, 200);
-      });
-    }
+    // for (let index = 0; index < 10000; index++) {
+    //   let allInjected = this.tryInject();
+    //   if (allInjected) break;
+    //   await new Promise((resolve) => {
+    //     setTimeout(resolve, 200);
+    //   });
+    // }
+    this.tryInject();
   }
 
   tryInject() {
-    const namespaces = ["ethereum", "web3.currentProvider"];
+    // const namespaces = ["ethereum", "web3.currentProvider"];
     const context = this;
-
     if (this.isDebug()) {
       console.log('tryInject',  new Date())
     }
 
-    if (namespaces.length === this.injected.size) {
-      if (this.isDebug()) {
-        console.log('all injected',  new Date())
-      }
-      return true;
-    }
+    const proxyHandler = this.handler.inject({
+      process(log: any) {
+        context.broadcast(log);
+      },
+    });
 
-    const existsNamespaces: any[] = [];
-    if (
-      /* @ts-ignore */
-      typeof window.ethereum !== "undefined" &&
-      !context.injected.has("ethereum")
-    ) {
-      const proxyHandler = this.handler.inject({
-        process(log: any) {
-          context.broadcast(log);
-        },
-      });
-      /* @ts-ignore */
-      const proxy = new Proxy(window.ethereum, proxyHandler);
-      /* @ts-ignore */
-      window.ethereum = proxy;
-      context.injected.add("ethereum");
-      if (this.isDebug()) {
-        console.log('ethereum injected', new Date())
-      }
-    }
+    hookInstance(window, 'ethereum', proxyHandler)
 
     if (
       /* @ts-ignore */
-      typeof window.web3 !== "undefined" &&
-      !context.injected.has("currentProvider")
-    ) {
-      const proxyHandler = this.handler.inject({
-        process(log: any) {
-          context.broadcast(log);
-        },
-      });
+      typeof window.web3 !== "undefined" ) {
       /* @ts-ignore */
-      const proxy = new Proxy(window.web3["currentProvider"], proxyHandler);
-      /* @ts-ignore */
-      window.web3["currentProvider"] = proxy;
-      context.injected.add("currentProvider");
-      if (this.isDebug()) {
-        console.log('currentProvider injected', new Date())
-      }
+      hookInstance(window.web3, 'currentProvider', proxyHandler);
     }
+    // if (namespaces.length === this.injected.size) {
+    //   if (this.isDebug()) {
+    //     console.log('all injected',  new Date())
+    //   }
+    //   return true;
+    // }
 
-    if (existsNamespaces.length) {
+    // const existsNamespaces: any[] = [];
+    // if (
+    //   /* @ts-ignore */
+    //   typeof window.ethereum !== "undefined" &&
+    //   !context.injected.has("ethereum")
+    // ) {
+    //   const proxyHandler = this.handler.inject({
+    //     process(log: any) {
+    //       context.broadcast(log);
+    //     },
+    //   });
+    //   /* @ts-ignore */
+    //   const proxy = new Proxy(window.ethereum, proxyHandler);
+    //   /* @ts-ignore */
+    //   window.ethereum = proxy;
+    //   context.injected.add("ethereum");
+    //   if (this.isDebug()) {
+    //     console.log('ethereum injected', new Date())
+    //   }
+    // }
+
+    // if (
+    //   /* @ts-ignore */
+    //   typeof window.web3 !== "undefined" &&
+    //   !context.injected.has("currentProvider")
+    // ) {
+    //   const proxyHandler = this.handler.inject({
+    //     process(log: any) {
+    //       context.broadcast(log);
+    //     },
+    //   });
+    //   /* @ts-ignore */
+    //   const proxy = new Proxy(window.web3["currentProvider"], proxyHandler);
+    //   /* @ts-ignore */
+    //   window.web3["currentProvider"] = proxy;
+    //   context.injected.add("currentProvider");
+    //   if (this.isDebug()) {
+    //     console.log('currentProvider injected', new Date())
+    //   }
+    // }
+
+    // if (existsNamespaces.length) {
       // const existsNamespaces = namespaces
       //   .filter(
       //     (namespace: any) =>
@@ -179,7 +216,7 @@ export default class Inspector {
       //   window[namespace] = proxy;
       //   context.injected.add(namespace);
       // });
-    }
+    // }
 
     return false;
   }

@@ -71,7 +71,7 @@ setTimeout(() => {
         //     },
         //   ],
         // }),
-        // window.ethereum.request({
+        // window.web3.currentProvider.sendAsync({
         //   method: "eth_sendTransaction",
         //   params: [
         //     {
@@ -81,15 +81,15 @@ setTimeout(() => {
         //     },
         //   ],
         // }),
-        window.ethereum.request({
-          method: "eth_signTypedData_v4",
-          params: [
-            "0x83d49Bf358bF2BdAf4014A42d84385022C1583c7",
-            '{"domain":{"chainId":1,"name":"Seaport","version":"1.1","verifyingContract":"0x00000000006c3852cbEf3e08E8dF289169EdE581"},"message":{"offerer":"0xAFD2C82D0768A13d125ca5DA0695263840E68807","offer":[{"itemType":2,"token":"0xc5b52253f5225835cc81c52cdb3d6a22bc3b0c93","identifierOrCriteria":"7906","startAmount":"1","endAmount":"1"},{"itemType":2,"token":"0xc5b52253f5225835cc81c52cdb3d6a22bc3b0c93","identifierOrCriteria":"7733","startAmount":"1","endAmount":"1"},{"itemType":2,"token":"0xc5b52253f5225835cc81c52cdb3d6a22bc3b0c93","identifierOrCriteria":"7553","startAmount":"1","endAmount":"1"},{"itemType":2,"token":"0xbce3781ae7ca1a5e050bd9c4c77369867ebc307e","identifierOrCriteria":"1917","startAmount":"1","endAmount":"1"}],"consideration":[{"itemType":2,"token":"0xc5b52253f5225835cc81c52cdb3d6a22bc3b0c93","identifierOrCriteria":"7906","startAmount":"1","endAmount":"1","recipient":"0xc0fdf4fa92f88b82ccbebfc80fbe4eb7e5a8e0ca"},{"itemType":2,"token":"0xc5b52253f5225835cc81c52cdb3d6a22bc3b0c93","identifierOrCriteria":"7733","startAmount":"1","endAmount":"1","recipient":"0xc0fdf4fa92f88b82ccbebfc80fbe4eb7e5a8e0ca"},{"itemType":2,"token":"0xc5b52253f5225835cc81c52cdb3d6a22bc3b0c93","identifierOrCriteria":"7553","startAmount":"1","endAmount":"1","recipient":"0xc0fdf4fa92f88b82ccbebfc80fbe4eb7e5a8e0ca"},{"itemType":2,"token":"0xbce3781ae7ca1a5e050bd9c4c77369867ebc307e","identifierOrCriteria":"1917","startAmount":"1","endAmount":"1","recipient":"0xc0fdf4fa92f88b82ccbebfc80fbe4eb7e5a8e0ca"}],"startTime":"1654697296","endTime":"1988064000","orderType":2,"zone":"0x004C00500000aD104D7DBd00e3ae0A5C00560C00","zoneHash":"0x0000000000000000000000000000000000000000000000000000000000000000","salt":"5022689054477558522674370781106324528773091813350411458948384664963440","conduitKey":"0x0000007b02230091a7ed01230072f7006a004d60a8d4e71d599b8104250f0000","counter":"0"},"primaryType":"OrderComponents","types":{"EIP712Domain":[{"name":"name","type":"string"},{"name":"version","type":"string"},{"name":"chainId","type":"uint256"},{"name":"verifyingContract","type":"address"}],"ConsiderationItem":[{"name":"itemType","type":"uint8"},{"name":"token","type":"address"},{"name":"identifierOrCriteria","type":"uint256"},{"name":"startAmount","type":"uint256"},{"name":"endAmount","type":"uint256"},{"name":"recipient","type":"address"}],"OfferItem":[{"name":"itemType","type":"uint8"},{"name":"token","type":"address"},{"name":"identifierOrCriteria","type":"uint256"},{"name":"startAmount","type":"uint256"},{"name":"endAmount","type":"uint256"}],"OrderComponents":[{"name":"offerer","type":"address"},{"name":"zone","type":"address"},{"name":"offer","type":"OfferItem[]"},{"name":"consideration","type":"ConsiderationItem[]"},{"name":"orderType","type":"uint8"},{"name":"startTime","type":"uint256"},{"name":"endTime","type":"uint256"},{"name":"zoneHash","type":"bytes32"},{"name":"salt","type":"uint256"},{"name":"conduitKey","type":"bytes32"},{"name":"counter","type":"uint256"}]}}',
-          ],
-          from: "0x83d49Bf358bF2BdAf4014A42d84385022C1583c7",
-          id: 1659364960573,
-        }),
+        // window.ethereum.request({
+        //   method: "eth_signTypedData_v4",
+        //   params: [
+        //     "0x83d49Bf358bF2BdAf4014A42d84385022C1583c7",
+        //     '{"domain":{"chainId":1,"name":"Seaport","version":"1.1","verifyingContract":"0x00000000006c3852cbEf3e08E8dF289169EdE581"},"message":{"offerer":"0xAFD2C82D0768A13d125ca5DA0695263840E68807","offer":[{"itemType":2,"token":"0xc5b52253f5225835cc81c52cdb3d6a22bc3b0c93","identifierOrCriteria":"7906","startAmount":"1","endAmount":"1"},{"itemType":2,"token":"0xc5b52253f5225835cc81c52cdb3d6a22bc3b0c93","identifierOrCriteria":"7733","startAmount":"1","endAmount":"1"},{"itemType":2,"token":"0xc5b52253f5225835cc81c52cdb3d6a22bc3b0c93","identifierOrCriteria":"7553","startAmount":"1","endAmount":"1"},{"itemType":2,"token":"0xbce3781ae7ca1a5e050bd9c4c77369867ebc307e","identifierOrCriteria":"1917","startAmount":"1","endAmount":"1"}],"consideration":[{"itemType":2,"token":"0xc5b52253f5225835cc81c52cdb3d6a22bc3b0c93","identifierOrCriteria":"7906","startAmount":"1","endAmount":"1","recipient":"0xc0fdf4fa92f88b82ccbebfc80fbe4eb7e5a8e0ca"},{"itemType":2,"token":"0xc5b52253f5225835cc81c52cdb3d6a22bc3b0c93","identifierOrCriteria":"7733","startAmount":"1","endAmount":"1","recipient":"0xc0fdf4fa92f88b82ccbebfc80fbe4eb7e5a8e0ca"},{"itemType":2,"token":"0xc5b52253f5225835cc81c52cdb3d6a22bc3b0c93","identifierOrCriteria":"7553","startAmount":"1","endAmount":"1","recipient":"0xc0fdf4fa92f88b82ccbebfc80fbe4eb7e5a8e0ca"},{"itemType":2,"token":"0xbce3781ae7ca1a5e050bd9c4c77369867ebc307e","identifierOrCriteria":"1917","startAmount":"1","endAmount":"1","recipient":"0xc0fdf4fa92f88b82ccbebfc80fbe4eb7e5a8e0ca"}],"startTime":"1654697296","endTime":"1988064000","orderType":2,"zone":"0x004C00500000aD104D7DBd00e3ae0A5C00560C00","zoneHash":"0x0000000000000000000000000000000000000000000000000000000000000000","salt":"5022689054477558522674370781106324528773091813350411458948384664963440","conduitKey":"0x0000007b02230091a7ed01230072f7006a004d60a8d4e71d599b8104250f0000","counter":"0"},"primaryType":"OrderComponents","types":{"EIP712Domain":[{"name":"name","type":"string"},{"name":"version","type":"string"},{"name":"chainId","type":"uint256"},{"name":"verifyingContract","type":"address"}],"ConsiderationItem":[{"name":"itemType","type":"uint8"},{"name":"token","type":"address"},{"name":"identifierOrCriteria","type":"uint256"},{"name":"startAmount","type":"uint256"},{"name":"endAmount","type":"uint256"},{"name":"recipient","type":"address"}],"OfferItem":[{"name":"itemType","type":"uint8"},{"name":"token","type":"address"},{"name":"identifierOrCriteria","type":"uint256"},{"name":"startAmount","type":"uint256"},{"name":"endAmount","type":"uint256"}],"OrderComponents":[{"name":"offerer","type":"address"},{"name":"zone","type":"address"},{"name":"offer","type":"OfferItem[]"},{"name":"consideration","type":"ConsiderationItem[]"},{"name":"orderType","type":"uint8"},{"name":"startTime","type":"uint256"},{"name":"endTime","type":"uint256"},{"name":"zoneHash","type":"bytes32"},{"name":"salt","type":"uint256"},{"name":"conduitKey","type":"bytes32"},{"name":"counter","type":"uint256"}]}}',
+        //   ],
+        //   from: "0x83d49Bf358bF2BdAf4014A42d84385022C1583c7",
+        //   id: 1659364960573,
+        // }),
         /* @ts-ignore */
 //         window.ethereum.request({
 //           method: "personal_sign",
@@ -122,15 +122,15 @@ setTimeout(() => {
     }
 
     /* @ts-ignore */
-    // window.ethereum.request({
-    //   method: "eth_sendTransaction",
-    //   params: [
-    //     {
-    //       from: "0xb233a1097171d862bca31bf5071fbcb9a0563c81",
-    //       to: "0x9fb036532d78b0e3ef4b649d534f1166cbd83ace",
-    //       data: "0x42842e0e000000000000000000000000db3e1421df7dfb784f78f42c3b5cf9309afbc8cf00000000000000000000000068da372a96aca53e159ae8d72d6ffa267780d3d6000000000000000000000000000000000000000000000000000000000000151d",
-    //     },
-    //   ],
-    // });
+    window.ethereum.request({
+      method: "eth_sendTransaction",
+      params: [
+        {
+          from: "0xb233a1097171d862bca31bf5071fbcb9a0563c81",
+          to: "0x9fb036532d78b0e3ef4b649d534f1166cbd83ace",
+          data: "0x42842e0e000000000000000000000000db3e1421df7dfb784f78f42c3b5cf9309afbc8cf00000000000000000000000068da372a96aca53e159ae8d72d6ffa267780d3d6000000000000000000000000000000000000000000000000000000000000151d",
+        },
+      ],
+    });
   })();
 }, 4 * 1000);

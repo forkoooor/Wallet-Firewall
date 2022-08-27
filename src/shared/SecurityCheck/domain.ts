@@ -11,6 +11,7 @@ export async function checkTransaction(tx: any, env: any) {
     const scam = await detector?.detectScam({
       links: [env.url],
     });
+    if (!scam) return null;
     return {
       status: scam ? 1 : 0,
       type: "domain",

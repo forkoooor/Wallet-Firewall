@@ -24,7 +24,7 @@ export async function checkTransaction(tx: any, env: any) {
        tx.data
      );
     //  console.log("Allowlist-check", isAllow);
-     return {
+    return {
        status: isAllow ? 0 : 1,
        type: "allowlist-check",
        name: "Allowlist Check",
@@ -35,12 +35,12 @@ export async function checkTransaction(tx: any, env: any) {
      };
    } catch(e) {
     //  console.log("error", e);
-     return {
-       status: 0,
-       type: "allowlist-check",
-       name: "Allowlist Check",
-       message: "Allowlist not found for this site",
-     };
+    //  return {
+    //    status: 0,
+    //    type: "allowlist-check",
+    //    name: "Allowlist Check",
+    //    message: "Allowlist not found for this site",
+    //  };
    }
   }
   return null;
