@@ -91,7 +91,6 @@ export default class Handler {
               args,
               consumer
             );
-            console.log('call', functionName, needBlock, args)
             if (needBlock) {
               const blocked = await needBlock();
                 if (blocked) {

@@ -87,7 +87,7 @@ function checkPayload(payload) {
   const isPermitType = compareTypes(typeDef, permitType)
   if (isPermitType) {
     const formattedMsg = `Sign-request detected, Approve ${message.spender} to spend your ${domain.name} with limit ${message.value}`
-    console.log('isSame', formattedMsg)
+    // console.log('isSame', formattedMsg)
     return {
       status: 1,
       name: "Sign Check",
