@@ -3,6 +3,7 @@ import { provider } from "./provider/eth";
 
 export async function checkTransaction(tx: any, env: any) {
   const rawTx = tx.raw;
+  if (!rawTx) return null;
   const callContract = rawTx.to;
   const hasEthTransfer = rawTx.value;
   

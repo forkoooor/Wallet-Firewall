@@ -28,18 +28,29 @@ const checkList: any[] = [
 const pageCheckList = [fakeWallet];
 const pageCheckListOnce = [siteStatus];
 
+function addLog(data: any) {
+  const div = document.createElement('div');
+  div.innerText = JSON.stringify(data, null, 2);
+  document.body.appendChild(div);
+}
+
 export async function checkTransaction(tx: any, env: any) {
   const start = Date.now();
   const toCheckList = env.chainId === '0x1' ? commonCheckList.concat(checkList) : commonCheckList;
   try {
     const result = await Promise.all(
-      toCheckList.map((_: any) => {
-        return _.checkTransaction(tx, env);
+      toCheckList.map(async (_: any) => {
+        try {
+          return await _.checkTransaction(tx, env);
+        } catch(e) {}
+        return null;
       })
     );
     const spend = Date.now() - start;
     return result.filter((_) => _);
-  } catch(e) {}
+  } catch(error: any) {
+    console.log('checkTransaction.error', error)
+  }
   return []
 }
 

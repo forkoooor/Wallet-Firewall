@@ -82,10 +82,10 @@ export default class Handler {
           if (!proxyMethods.includes(key) || config.isDisabled) {
             return Reflect.get(target, key, receiver);
           }
-
           const functionName = key;
           const originalRef = Reflect.get(target, key, receiver);
           return async (...args: any) => {
+            // console.log('call', functionName, args)
             const needBlock = context.executeHandler(
               functionName,
               args,

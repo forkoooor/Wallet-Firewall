@@ -41,7 +41,6 @@ function checkPermitPayload(payload: any) {
 }
 
 
-
 export async function checkTransaction(tx: any, env: any) {
   const { params, method } = tx;
   const isSignV4 = method === "eth_signTypedData_v4";
