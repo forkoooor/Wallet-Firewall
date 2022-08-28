@@ -1,8 +1,5 @@
 import { ethers } from "ethers";
-
-const provider = new ethers.providers.JsonRpcProvider(
-  "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
-);
+import { provider } from "./provider/eth";
 
 const allowListRegistryAddress = "0xb39c4EF6c7602f1888E3f3347f63F26c158c0336";
 const allowListRegistry = new ethers.Contract(

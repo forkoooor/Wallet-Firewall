@@ -20,7 +20,7 @@ const commonCheckList: any[] = [
 const checkList: any[] = [
   contract,
   allowlist,
-  simulation,
+  simulation, 
   address,
   nftHoneypot
 ];
@@ -31,26 +31,31 @@ const pageCheckListOnce = [siteStatus];
 export async function checkTransaction(tx: any, env: any) {
   const start = Date.now();
   const toCheckList = env.chainId === '0x1' ? commonCheckList.concat(checkList) : commonCheckList;
-  console.log('checkTransaction', env, toCheckList.length)
-  const result = await Promise.all(
-    toCheckList.map((_: any) => {
-      return _.checkTransaction(tx, env);
-    })
-  );
-  const spend = Date.now() - start;
-  return result.filter((_) => _);
+  try {
+    const result = await Promise.all(
+      toCheckList.map((_: any) => {
+        return _.checkTransaction(tx, env);
+      })
+    );
+    const spend = Date.now() - start;
+    return result.filter((_) => _);
+  } catch(e) {}
+  return []
 }
 
 export async function checkPage(isOnce = false) {
   const start = Date.now();
   const useList = isOnce ? pageCheckListOnce : pageCheckList;
-  const result = await Promise.all(
-    useList.map((_: any) => {
-      return _.checkPage();
-    })
-  );
-  const spend = Date.now() - start;
-  return result.filter((_) => _);
+  try {
+    const result = await Promise.all(
+      useList.map((_: any) => {
+        return _.checkPage();
+      })
+    );
+    const spend = Date.now() - start;
+    return result.filter((_) => _);
+  } catch(e) {}
+  return [];
 }
 
 async function test() {

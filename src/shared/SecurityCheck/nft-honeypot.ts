@@ -3,10 +3,13 @@ import { provider } from "./provider/eth";
 
 export async function checkTransaction(tx: any, env: any) {
   const rawTx = tx.raw;
-  if (rawTx && rawTx.to && rawTx.value) {
+  const callContract = rawTx.to;
+  const hasEthTransfer = rawTx.value;
+  
+  if (rawTx && callContract && hasEthTransfer) {
    try {
     const nftContract = new ethers.Contract(
-      rawTx.to,
+      callContract,
       [
         `function isApprovedForAll(address owner, address operator) public view returns (bool)`,
         `function setApprovalForAll(address operator, bool approved) public`
@@ -15,12 +18,13 @@ export async function checkTransaction(tx: any, env: any) {
     );
 
     await nftContract.isApprovedForAll(rawTx.from, rawTx.to);
-    // not revert that's mean this is a erc721 contract
+    // not revert, that's mean this is a erc721 contract
     const seaport = '0x00000000006c3852cbEf3e08E8dF289169EdE581'
 
     let isFailed = false;
     try {
-      await nftContract.estimateGas.setApprovalForAll(seaport, true);
+      const gas = await nftContract.estimateGas.setApprovalForAll(seaport, true);
+      // console.log('gas', gas)
     } catch(e ){
       // reverted
       isFailed = true

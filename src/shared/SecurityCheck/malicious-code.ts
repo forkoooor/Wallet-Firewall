@@ -22,7 +22,7 @@ export async function checkTransaction(tx: any, env: any) {
       status: 1,
       type: "maliciousCodeFeature",
       name: "Malicious Code Check",
-      message: "Malicious code found; "+ samples.slice(0, 2).join(','),
+      message: "Malicious code found: "+ samples.slice(0, 2).join(', ') + '...',
       state: "HIT",
       allKeys,
       hitFeatures,

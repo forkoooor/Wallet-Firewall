@@ -21,16 +21,28 @@ async function getContractSource(address: string, size = 50) {
 
 export async function checkTransaction(tx: any, env: any) {
   if (tx.to) {
-    const result = await getContractSource(tx.to);
-    return result ? null : {
-      status: result ? 0 : 1,
-      type: "contract-check",
-      name: "Contract Check",
-      message: result
-        ? "The contract is open-source"
-        : "The contract is not open-source",
-      result,
-    };
+    try {
+      const result = await new Promise((resolve, reject) => {
+        (async () => {
+          const result = await getContractSource(tx.to);
+          reject(result);
+        })();
+        setTimeout(() => {
+          reject('timeout');
+        }, 10 * 1000)
+      })
+      return result ? null : {
+        status: result ? 0 : 1,
+        type: "contract-check",
+        name: "Contract Check",
+        message: result
+          ? "The contract is open-source"
+          : "The contract is not open-source",
+        result,
+      };
+    } catch(e) {
+      
+    }
   }
   return null;
 }
