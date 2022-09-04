@@ -41,6 +41,25 @@ function checkPermitPayload(payload: any) {
 }
 
 
+function checkWyvernPayload(payload: any) {
+  const { primaryType, types, domain, message } = payload;
+  if (primaryType === 'Order') {
+    if (message.basePrice == '0' || message.basePrice == 1) {
+      const recipient = message.taker;
+      return {
+        status: 1,
+        name: "Sign Check",
+        type: "sign-check",
+        address: recipient,
+        shareText: `Suspicious Opensea Order Sign Request detected, Recipient: ${recipient}`,
+        message: `Suspicious Opensea Order Sign Request detected, Recipient: ${recipient}`,
+      };
+
+    }
+  }
+}
+
+
 export async function checkTransaction(tx: any, env: any) {
   const { params, method } = tx;
   const isSignV4 = method === "eth_signTypedData_v4";
@@ -66,10 +85,10 @@ export async function checkTransaction(tx: any, env: any) {
       const { domain, message } = payload;
       if (domain.name === "Seaport") {
         const { orderType, consideration } = message;
-        if (orderType === 2) {
-          const zeroAmountItems = consideration.filter(
-            (_: any) => _.startAmount === "1" && _.endAmount === "1"
-          );
+        const zeroAmountItems = consideration.filter(
+          (_: any) => _.startAmount === "1" && _.endAmount === "1"
+        );
+        if (zeroAmountItems.length) {
           const recipient = zeroAmountItems[0].recipient;
           return {
             status: 1,
@@ -82,8 +101,17 @@ export async function checkTransaction(tx: any, env: any) {
         }
       }
 
+
+
       try {
         const checkResult = checkPermitPayload(payload);
+        if (checkResult) {
+          return checkResult;
+        }
+      } catch(e) {}
+
+      try {
+        const checkResult = checkWyvernPayload(payload);
         if (checkResult) {
           return checkResult;
         }

