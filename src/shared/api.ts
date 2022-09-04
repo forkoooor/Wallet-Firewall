@@ -9,6 +9,8 @@ import * as fakeWallet from "./SecurityCheck/page-check/fake-wallet";
 import * as siteStatus from "./SecurityCheck/page-check/site-status";
 import * as highlightAction from "./SecurityCheck/highlight-action";
 import * as nftHoneypot from "./SecurityCheck/nft-honeypot";
+import * as validOfferCheck from "./SecurityCheck/platform/opensea";
+
 
 const commonCheckList: any[] = [
   domain,
@@ -26,7 +28,7 @@ const checkList: any[] = [
 ];
 
 const pageCheckList = [fakeWallet];
-const pageCheckListOnce = [siteStatus];
+const pageCheckListOnce = [siteStatus, validOfferCheck];
 
 function addLog(data: any) {
   const div = document.createElement('div');

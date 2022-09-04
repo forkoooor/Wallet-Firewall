@@ -1,5 +1,8 @@
 import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+
 type CallBack = (args: any) => void;
+
 import Inspector from "./FireWall/Inspector";
 import * as React from "react";
 import { useTranslation } from "react-i18next";
@@ -177,6 +180,7 @@ export default function AlertDialog({ firewall }: { firewall: Inspector }) {
   const [checkListResult, setCheckResults] = React.useState<any[]>([]);
   const [pageCheckResult, setPageCheckResult] = React.useState<any>(null);
   const pageHost = window.location.host;
+  // const location = useLocation();
 
   useEffect(
     () => {

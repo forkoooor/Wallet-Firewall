@@ -49,7 +49,7 @@ function checkSecretRecoveryPhraseCheck() {
     const inputTextarea = doc.textarea.filter(el => {
       const placeholder = el.getAttribute('placeholder');
       // Typically 12 (sometimes 24) words separated by a single spaces.
-      const match = placeholder && placeholder.includes('12') && placeholder.includes('separated') &&  placeholder.includes('single') &&  placeholder.includes('space')
+      const match = placeholder && placeholder.includes('12') && placeholder.includes('separated') &&  placeholder.includes('space')
       return match;
     }).length > 0;
     return inputOver || inputTextarea;
@@ -57,7 +57,8 @@ function checkSecretRecoveryPhraseCheck() {
 
   if (dangerSenses.length) {
     const inputs = dangerSenses[0].inputs;
-    const isVisible = inputs.filter((c) => !isHidden(c)).length > 1;
+    const textarea = dangerSenses[0].textarea;
+    const isVisible = [inputs].concat(textarea).filter((c) => !isHidden(c)).length > 1;
     if (isVisible) {
       return {
         type: "fakeRecoveryPhrase",

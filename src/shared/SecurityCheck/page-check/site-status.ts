@@ -9,7 +9,6 @@ detector.update();
 export async function checkPage() {
     try {
         const result = await detector.checkSiteStatus(window.location.href)
-        // console.log('checkSiteStatus', result)
         if (result.dns) {
             return {
                 type: "dns-changes",
