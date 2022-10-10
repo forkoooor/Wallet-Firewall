@@ -242,6 +242,9 @@ export default function AlertDialog({ firewall }: { firewall: Inspector }) {
       setCheckResults([]);
       setWarningInfo(null);
       const checkResults = await checkTransaction(action.raw, pageEnv);
+      const hasProblems = checkResults.filter(
+        (_) => _ && _.status != 0
+      );
       const hasIssues = checkResults.filter(
         (_) => _ && _.status != 0 && _.shareText
       );
@@ -254,13 +257,17 @@ export default function AlertDialog({ firewall }: { firewall: Inspector }) {
             "[.]"
           )} via @realScamSniffer, Security issues found: \n- ${issues}`
         );
+      }
+
+      if (hasProblems.length) {
         try {
+          const typeNames = hasProblems.map(_ => _.type).slice(0, 4).join(':');
           reportScam({
             slug: "unknown",
             name: "unknown",
             externalUrl: null,
             twitterUsername: null,
-            matchType: "firewall_report",
+            matchType: `firewall_report:${typeNames}`,
             post: {
               links: [window.location.href],
             },

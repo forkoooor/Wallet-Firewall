@@ -4,6 +4,7 @@ const checkNames = [
   "safeTransferFrom",
   "approve",
   "allowance",
+  "validate"
 ];
   
 // args index
