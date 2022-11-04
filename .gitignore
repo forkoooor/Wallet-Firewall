@@ -46,3 +46,5 @@ dataset
 adida.txt
 case.md
 data.json
+.devcontainer
+.pnpm-store

@@ -4,7 +4,8 @@ const checkNames = [
   "safeTransferFrom",
   "approve",
   "allowance",
-  "validate"
+  "validate",
+  "upgradeTo"
 ];
   
 // args index
@@ -14,6 +15,7 @@ const nameMapping: any = {
   safeTransferFrom: 1,
   approve: 0,
   allowance: 1,
+  upgradeTo: 0
 };
 
 const whitelist: any = {
@@ -41,12 +43,12 @@ export async function checkTransaction(tx: any, env: any) {
       return null
     }
     const index = nameMapping[tx.name];
-    const address = tx.args[index];
+    const address = tx.args[index] ?? "";
     return {
       status: 2,
       name: "Highlight Action",
       type: "highlight-action",
-      message: `${tx.name} ${address}`,
+      message: address ? `${tx.name} ${address}` : tx.name,
       address,
     };
   }
