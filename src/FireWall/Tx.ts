@@ -47,6 +47,7 @@ export function parseRequest(request: any) {
       "signTypedData",
       "signTypedData_v1",
       "signTypedData_v3",
+      "eth_signTypedData_v3",
       "eth_signTypedData_v4",
     ].includes(method)
   ) {
@@ -58,67 +59,67 @@ export function parseRequest(request: any) {
       payload: request.params[1],
     };
   }
-    if (
-      ["eth_sendTransaction", "eth_sendRawTransaction"].indexOf(method) > -1
-    ) {
-      const tx = request.params[0];
-      const isRaw = method === "eth_sendRawTransaction";
-      isRead = method === "eth_call";
-      try {
-        const transaction = isRaw ? ethers.utils.parseTransaction(tx) : tx;
-        const dataEmpty =
-          !transaction.data || (transaction.data && transaction.data === "0x");
+  if (
+    ["eth_sendTransaction", "eth_sendRawTransaction"].indexOf(method) > -1
+  ) {
+    const tx = request.params[0];
+    const isRaw = method === "eth_sendRawTransaction";
+    isRead = method === "eth_call";
+    try {
+      const transaction = isRaw ? ethers.utils.parseTransaction(tx) : tx;
+      const dataEmpty =
+        !transaction.data || (transaction.data && transaction.data === "0x");
 
-        if (!dataEmpty) {
-          const decodedInput = parser.parseTransaction({
-            data: transaction.data,
-            value: transaction.value,
-          });
-          const formatted = {};
-          // for (let key in decodedInput.args) {
-          //   formatted[key] =
-          //     decodedInput.args[key] instanceof BigNumber
-          //       ? decodedInput.args[key].toString()
-          //       : decodedInput.args[key];
-          // }
-          if (decodedInput.name) {
-            parsedAction = {
-              method,
-              name: decodedInput.name,
-              isRead,
-              signature: decodedInput.signature,
-              args: decodedInput.args,
-              to: transaction.to,
-              from: transaction.from,
-              data: transaction.data,
-              raw: transaction,
-            };
-          }
-        } else if (dataEmpty && transaction.value) {
+      if (!dataEmpty) {
+        const decodedInput = parser.parseTransaction({
+          data: transaction.data,
+          value: transaction.value,
+        });
+        const formatted = {};
+        // for (let key in decodedInput.args) {
+        //   formatted[key] =
+        //     decodedInput.args[key] instanceof BigNumber
+        //       ? decodedInput.args[key].toString()
+        //       : decodedInput.args[key];
+        // }
+        if (decodedInput.name) {
           parsedAction = {
-            name: "transferETH",
             method,
+            name: decodedInput.name,
             isRead,
+            signature: decodedInput.signature,
+            args: decodedInput.args,
             to: transaction.to,
             from: transaction.from,
             data: transaction.data,
-            args: {
-              amount: transaction.value.toString(),
-            },
             raw: transaction,
           };
         }
-      } catch (e) {
+      } else if (dataEmpty && transaction.value) {
         parsedAction = {
-          isRead,
+          name: "transferETH",
           method,
-          to: tx.to,
-          from: tx.from,
-          data: tx.data,
-          raw: tx,
+          isRead,
+          to: transaction.to,
+          from: transaction.from,
+          data: transaction.data,
+          args: {
+            amount: transaction.value.toString(),
+          },
+          raw: transaction,
         };
       }
+    } catch (e) {
+      parsedAction = {
+        isRead,
+        method,
+        to: tx.to,
+        from: tx.from,
+        data: tx.data,
+        raw: tx,
+      };
     }
-  
+  }
+
   return parsedAction;
 }
