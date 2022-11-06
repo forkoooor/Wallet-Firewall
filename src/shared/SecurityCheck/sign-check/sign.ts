@@ -7,6 +7,29 @@ const permitType = [
   { name: 'nonce', type: 'uint256' },
   { name: 'deadline', type: 'uint256' }
 ];
+const permitTypeForDAI = [
+  {
+    name: "holder",
+    type: "address",
+  },
+  {
+    name: "spender",
+    type: "address",
+  },
+  {
+    name: "nonce",
+    type: "uint256",
+  },
+  {
+    name: "expiry",
+    type: "uint256",
+  },
+  {
+    name: "allowed",
+    type: "bool",
+  }
+]
+
 
 function toId(array1: any) {
   let id = '';
@@ -16,7 +39,7 @@ function toId(array1: any) {
   return id
 }
 
-function compareTypes(array1: any, array2: any) {
+function isEqualType(array1: any, array2: any) {
   const id1 = toId(array1);
   const id2 = toId(array2)
   return id2 === id1;
@@ -25,11 +48,17 @@ function compareTypes(array1: any, array2: any) {
 function checkPermitPayload(payload: any) {
   const { primaryType, types, domain, message } = payload;
   const typeDef = types[primaryType];
-  const isPermitType = compareTypes(typeDef, permitType)
-  if (isPermitType) {
-    const formattedMsg = `Sign-request detected, Approve ${message.spender} to spend your ${domain.name} with limit ${message.value}`
+
+  let formattedMsg = "";
+  if (isEqualType(typeDef, permitType)) {
+    formattedMsg = `Sign-request detected, Approve ${message.spender} to spend your ${domain.name} with limit ${message.value}`;
+  } else if (isEqualType(typeDef, permitTypeForDAI) && message.allowed) {
+    const date = new Date(message.expiry * 1000);
+    formattedMsg = `Sign-request detected, Approve ${message.spender} to spend your ${domain.name} utils ${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
+  }
+
+  if (formattedMsg) {
     return {
-      // warning
       status: 2,
       name: "Sign Check",
       type: "sign-check",
@@ -62,7 +91,6 @@ function checkWyvernPayload(payload: any) {
 
 export async function checkTransaction(tx: any, env: any) {
   const { params, method } = tx;
-  const isSignV4 = method === "eth_signTypedData_v4";
   // personal_sign
   const isSign = ["eth_sign", "personal_sign"].includes(method);
   if (isSign) {
@@ -79,43 +107,44 @@ export async function checkTransaction(tx: any, env: any) {
       };
     }
   }
-  
-  if (isSignV4) {
-      const payload = JSON.parse(tx.payload);
-      const { domain, message } = payload;
-      if (domain.name === "Seaport") {
-        const { orderType, consideration } = message;
-        const zeroAmountItems = consideration.filter(
-          (_: any) => _.startAmount === "1" && _.endAmount === "1"
-        );
-        if (zeroAmountItems.length) {
-          const recipient = zeroAmountItems[0].recipient;
-          return {
-            status: 1,
-            name: "Sign Check",
-            type: "sign-check",
-            address: recipient,
-            shareText: `Suspicious Seaport Order Sign Request detected, Recipient: ${recipient}`,
-            message: `Suspicious Seaport Order Sign Request detected, Recipient: ${recipient}`,
-          };
-        }
+
+  const isSignTypedData = ["eth_signTypedData_v3", "eth_signTypedData_v4"];
+  if (isSignTypedData) {
+    const payload = JSON.parse(tx.payload);
+    const { domain, message } = payload;
+    if (domain.name === "Seaport") {
+      const { orderType, consideration } = message;
+      const zeroAmountItems = consideration.filter(
+        (_: any) => _.startAmount === "1" && _.endAmount === "1"
+      );
+      if (zeroAmountItems.length) {
+        const recipient = zeroAmountItems[0].recipient;
+        return {
+          status: 1,
+          name: "Sign Check",
+          type: "sign-check",
+          address: recipient,
+          shareText: `Suspicious Seaport Order Sign Request detected, Recipient: ${recipient}`,
+          message: `Suspicious Seaport Order Sign Request detected, Recipient: ${recipient}`,
+        };
       }
-
-
-
-      try {
-        const checkResult = checkPermitPayload(payload);
-        if (checkResult) {
-          return checkResult;
-        }
-      } catch(e) {}
-
-      try {
-        const checkResult = checkWyvernPayload(payload);
-        if (checkResult) {
-          return checkResult;
-        }
-      } catch(e) {}
     }
+
+
+
+    try {
+      const checkResult = checkPermitPayload(payload);
+      if (checkResult) {
+        return checkResult;
+      }
+    } catch (e) { }
+
+    try {
+      const checkResult = checkWyvernPayload(payload);
+      if (checkResult) {
+        return checkResult;
+      }
+    } catch (e) { }
+  }
   return null;
 } 
