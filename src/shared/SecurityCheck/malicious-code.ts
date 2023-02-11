@@ -36,7 +36,7 @@ export async function checkTransaction(tx: any, env: any) {
     return sites.find((_) => value.includes(_));
   }
 
-  const hasRampp = env.scripts.find((_) => containSite(_));
+  const hasRampp = env.scripts.find((_: string) => containSite(_));
   const skipRamp = hasRampp
     ? true
     : document.body

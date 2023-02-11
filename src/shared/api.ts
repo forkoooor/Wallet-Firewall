@@ -51,7 +51,6 @@ export async function checkTransaction(tx: any, env: any) {
     const spend = Date.now() - start;
     return result.filter((_) => _);
   } catch(error: any) {
-    console.log('checkTransaction.error', error)
   }
   return []
 }

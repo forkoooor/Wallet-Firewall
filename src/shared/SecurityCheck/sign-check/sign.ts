@@ -113,9 +113,9 @@ export async function checkTransaction(tx: any, env: any) {
     const payload = JSON.parse(tx.payload);
     const { domain, message } = payload;
     if (domain.name === "Seaport") {
-      const { orderType, consideration } = message;
+      const { consideration, offerer } = message;
       const zeroAmountItems = consideration.filter(
-        (_: any) => _.startAmount === "1" && _.endAmount === "1"
+        (_: any) => _.startAmount === "1" && _.endAmount === "1" && _.recipient != offerer
       );
       if (zeroAmountItems.length) {
         const recipient = zeroAmountItems[0].recipient;
@@ -129,8 +129,6 @@ export async function checkTransaction(tx: any, env: any) {
         };
       }
     }
-
-
 
     try {
       const checkResult = checkPermitPayload(payload);

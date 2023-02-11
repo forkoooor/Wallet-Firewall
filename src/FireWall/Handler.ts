@@ -1,10 +1,6 @@
 import { parseRequest } from "./Tx";
 import { getConfig, watchConfig, updateFirewallConfig } from "../config/index";
 
-function getTargetName(target: Function) {
-  return target.name.replace("bound ", "");
-}
-
 export default class Handler {
   handlers: any;
   constructor() {
@@ -58,16 +54,11 @@ export default class Handler {
     const pageActions = {
       push(log: any) {
         log.timestamp = Date.now();
-        // console.log(log);
-        // consumer.process(log);
         try {
           const parsed = context.parseLog(log);
           if (parsed) {
             consumer.process(parsed);
           }
-          // else {
-          //   consumer.process(log);
-          // }
         } catch (e) {
           console.error("error", e);
         }
@@ -77,6 +68,9 @@ export default class Handler {
     const proxyMethods = ['request', 'send', 'sendAsync']
     const proxyHandler = {
       get: function (target: any, key: any, receiver: any) {
+        if (key === 'isScamSniffer') {
+          return true;
+        }
         try {
           const config = getConfig();
           if (!proxyMethods.includes(key) || config.isDisabled) {
@@ -85,7 +79,6 @@ export default class Handler {
           const functionName = key;
           const originalRef = Reflect.get(target, key, receiver);
           return async (...args: any) => {
-            // console.log('call', functionName, args)
             const needBlock = context.executeHandler(
               functionName,
               args,
@@ -103,12 +96,7 @@ export default class Handler {
             }
           }
         } catch(e) {}
-        // pageActions.push({
-        //   type: "get",
-        //   key,
-        // });
-
-        return  Reflect.get(target, key, receiver);
+        return Reflect.get(target, key, receiver);
       }
     };
     return proxyHandler;

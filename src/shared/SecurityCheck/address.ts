@@ -19,7 +19,6 @@ async function loadRecentTransaction(address: string, size = 50) {
       });
       continue;
     }
-    // console.log("txList", txList);
     return txList;
   }
 }
@@ -70,13 +69,6 @@ function tryAnalyticRecentTx(txList: any) {
     }
     return false;
   });
-  // const hasHilight
-  // console.log("topFunction", {
-  //   topFunction,
-  //   maxNonce,
-  //   lastTimeStamp,
-  //   highlightActions,
-  // });
   return {
     topFunction,
     maxNonce,
@@ -117,7 +109,6 @@ async function checkAddress(address: string) {
       return false;
     });
 
-  // console.log("isBlack", isBlack);
   if (isBlack) {
     const source = state.data_source || "GoPlus";
     return {

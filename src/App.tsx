@@ -87,34 +87,6 @@ import {
 } from "@holoflows/kit";
 
 
-// function watchPage() {
-//   const bodyEl = new LiveSelector().querySelectorAll<HTMLDivElement>("body");
-//   new MutationObserverWatcher(bodyEl)
-//     .useForeach((node, key, metadata) => {
-//       console.log("node", node, key, metadata);
-//       return {
-//         onNodeMutation: () => {
-//           console.log("onNodeMutation");
-//         },
-//         onRemove: () => {
-//           console.log("onRemove");
-//         },
-//         onTargetChanged: () => {
-//           console.log("onChange");
-//         },
-//       };
-//     })
-
-//     .startWatch({
-//       subtree: true,
-//       childList: true,
-//       attributes: true,
-//       attributeOldValue: true
-//     });
-// }
-
-// watchPage();
-
 function dumpWindowCheck() {
     var names = [];
     var functions = [
@@ -222,7 +194,6 @@ export default function AlertDialog({ firewall }: { firewall: Inspector }) {
   useEffect(() => {
     firewall.listenRequest(async (action: any) => {
         const pageEnv = getPageEnv();
-        // console.log("action", action, pageEnv);
         const formatted = formatAction(action, 'zh-CN')
         setAction(formatted);
         setOpen(true);
@@ -278,7 +249,6 @@ export default function AlertDialog({ firewall }: { firewall: Inspector }) {
       setCheckResults(checkResults);
       setCheckIng(false);
 
-      console.log('allResults', allResults)
       if (!allResults.length) {
         setTimeout(() => {
           approveWaiter && approveWaiter(false);

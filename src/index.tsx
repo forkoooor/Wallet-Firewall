@@ -13,9 +13,7 @@ const version = "0.0.4";
 const firewall = new Inspector();
 firewall.init();
 
-// console.log('run', Date.now());
 function mountApp() {
-  console.log("mount interface", version);
   const createReactRootShadowed = createReactRootShadowedPartial({
     preventEventPropagationList: [],
   });
@@ -29,17 +27,6 @@ function mountApp() {
     counter++;
   }
   createAndRender();
-  // (function(){
-  //   var rs = history.replaceState;
-  //   history.replaceState = function(...args){
-  //     rs.apply(history, args);
-  //     console.log("navigating", args);
-  //     if (view) {
-  //       view.destroy();
-  //       createAndRender();
-  //     }
-  //   };
-  // }());
 }
 
 /* @ts-ignore */
